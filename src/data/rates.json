@@ -1,0 +1,64 @@
+{
+  "baseRates": {
+    "regionalPricePerPerson": 25,
+    "nationalPricePerPerson": 35,
+    "regionalStates": ["Táchira", "Mérida", "Trujillo"]
+  },
+  "branches": {
+    "san_cristobal": {
+      "name": "Sucursal San Cristóbal",
+      "coveredStates": ["Táchira", "Mérida", "Trujillo", "Barinas", "Zulia"]
+    },
+    "caracas": {
+      "name": "Sucursal Caracas",
+      "coveredStates": ["DEFAULT"]
+    }
+  },
+  "travel": {
+    "costPerKm": 0.90,
+    "heavyLogisticsPaxThreshold": 180,
+    "heavyLogisticsMultiplier": 2,
+    "customCityRates": {
+      "San Cristóbal": 0,
+      "Caracas": 0,
+      "Cúcuta": 120,
+      "Barinas": 150
+    }
+  },
+  "lodging": {
+    "costPerParrillero": 40,
+    "paxPerParrillero": 40,
+    "citiesRequiringLodging": ["Mérida", "Trujillo", "Barinas", "Zulia", "Valencia", "Barquisimeto", "Maracaibo"]
+  },
+  "menuOptions": {
+    "modalities": [
+      { "id": "self_service", "name": "Self-Services", "minRecipes": 2, "maxRecipes": 3, "description": "Servicio tipo buffet asistido." },
+      { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "Servicio dividido en dos tiempos." },
+      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Servicio continuo de cortes a la mesa." }
+    ],
+    "recipes": [
+      { "id": "lomo_cerdo", "name": "Lomo de Cerdo", "description": "Corte jugoso adobado con especias del campo." },
+      { "id": "puntas_ahumadas", "name": "Puntas Traseras Ahumadas", "description": "Lento ahumado a la leña." },
+      { "id": "costillas_bbq", "name": "Costillas de Cerdo BBQ", "description": "Ahumadas en salsa BBQ artesanal." },
+      { "id": "costillas_ajillo", "name": "Costillas de Cerdo al Ajillo", "description": "Ahumadas con toque de ajillo casero." },
+      { "id": "carne_vara", "name": "Tradicional Carne en Vara", "description": "Estilo llanero cocinado a fuego lento." },
+      { "id": "beef_wellington", "name": "Beef Wellington", "description": "Lomo envuelto en hojaldre y duxelles." },
+      { "id": "pork_belly", "name": "Pork Belly", "description": "Chicharrón crocante y carnoso." },
+      { "id": "picanha", "name": "Picanha Tradicional", "description": "Corte prime con capa de grasa crujiente." },
+      { "id": "churrasco_solomo", "name": "Churrasco de Solomo / Punta Grill", "description": "A la parrilla en su punto exacto." },
+      { "id": "pollo_vara", "name": "Pollo en Vara", "description": "Doradito y sazonado artesanalmente." },
+      { "id": "pechuga_grill", "name": "Churrasco o Pechuga de Pollo al Grill", "description": "Corte magro y jugoso." }
+    ],
+    "sides": [
+      { "id": "yuca", "name": "Yuca hervida/al vapor" },
+      { "id": "papitas", "name": "Papitas amarillas colombianas" },
+      { "id": "mazorcas", "name": "Mazorcas a la parrilla" }
+    ],
+    "salads": [
+      { "id": "pimentones", "name": "Pimentones ahumados rellenos" },
+      { "id": "capressa", "name": "Ensalada Capressa tradicional" },
+      { "id": "mixta", "name": "Ensalada Mixta" },
+      { "id": "cesar", "name": "Ensalada César" }
+    ]
+  }
+}
