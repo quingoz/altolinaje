@@ -1,9 +1,9 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import Image from "next/image";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
 export interface OwnerPDFData {
-  quoteCode: string;
   eventDate: string;
   pax: number;
   state: string;
@@ -40,9 +40,16 @@ const today = new Date().toLocaleDateString("es-VE", {
   day: "numeric",
 });
 
+function generateQuoteCode() {
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+  return `AL-${date}-${suffix}`;
+}
+
 const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
   function OwnerPDF(props, ref) {
     const templateRef = useRef<HTMLDivElement>(null);
+    const [quoteCode] = useState(generateQuoteCode);
 
     useImperativeHandle(ref, () => ({
       download: async () => {
@@ -54,7 +61,7 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
           .from(templateRef.current)
           .set({
             margin: 0,
-            filename: `alto-linaje-cotizacion-${props.quoteCode}.pdf`,
+            filename: `alto-linaje-cotizacion-${quoteCode}.pdf`,
             image: { type: "jpeg", quality: 0.98 },
             html2canvas: {
               scale: 2,
@@ -78,29 +85,35 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
     return (
       <div
         ref={templateRef}
-        className="fixed left-[-9999px] top-0 w-[210mm] bg-white p-[15mm] text-[11pt] text-black"
+        className="fixed left-[-9999px] top-0 w-[210mm] bg-[#ffffff] p-[15mm] text-[11pt] text-[#000000]"
         style={{ zIndex: -1 }}
       >
-        <header className="flex items-center justify-between border-b-2 border-[#fd0200] pb-4">
+        <header className="flex items-center justify-between rounded-t-2xl bg-[#0b0c0e] p-4 border-b-2 border-[#fd0200]">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black text-white">
-              <span className="text-[10pt] font-bold">AL</span>
-            </div>
+            <Image
+              src="/images/logo.png"
+              alt="Alto Linaje"
+              width={140}
+              height={50}
+              unoptimized
+              priority
+              className="h-10 w-auto"
+            />
             <div>
-              <h1 className="text-[18pt] font-bold leading-none text-black">
+              <h1 className="text-[18pt] font-bold leading-none text-[#ffffff]">
                 Alto Linaje
               </h1>
-              <p className="text-[8pt] text-gray-600">
+              <p className="text-[8pt] text-[#9ca3af]">
                 Experiencias de parrilla de alto nivel
               </p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-[8pt] text-gray-500">Cotización oficial</p>
+            <p className="text-[8pt] text-[#d1d5db]">Cotización oficial</p>
             <p className="text-[13pt] font-bold text-[#fd0200]">
-              {props.quoteCode}
+              {quoteCode}
             </p>
-            <p className="text-[8pt] text-gray-500">{today}</p>
+            <p className="text-[8pt] text-[#9ca3af]">{today}</p>
           </div>
         </header>
 
@@ -109,36 +122,36 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
             <h2 className="text-[12pt] font-bold uppercase tracking-wider text-[#fd0200]">
               Datos del evento
             </h2>
-            <table className="mt-2 w-full border-collapse border border-gray-300 text-[10pt]">
+            <table className="mt-2 w-full border-collapse border border-[#d1d5db] text-[10pt]">
               <tbody>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Fecha
                   </td>
                   <td className="p-2">{props.eventDate || "Por definir"}</td>
                 </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Ubicación
                   </td>
                   <td className="p-2">
                     {props.city}, {props.state}
                   </td>
                 </tr>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Distancia estimada
                   </td>
                   <td className="p-2">{props.distanceKm} km</td>
                 </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Invitados
                   </td>
                   <td className="p-2">{props.pax} personas</td>
                 </tr>
-                <tr className="bg-gray-50">
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="bg-[#f9fafb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Sucursal asignada
                   </td>
                   <td className="p-2">{props.assignedBranch}</td>
@@ -151,28 +164,28 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
             <h2 className="text-[12pt] font-bold uppercase tracking-wider text-[#fd0200]">
               Menú seleccionado
             </h2>
-            <table className="mt-2 w-full border-collapse border border-gray-300 text-[10pt]">
+            <table className="mt-2 w-full border-collapse border border-[#d1d5db] text-[10pt]">
               <tbody>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Modalidad
                   </td>
                   <td className="p-2">{props.modalityName || "-"}</td>
                 </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Recetas
                   </td>
                   <td className="p-2">{props.recipes.join(", ") || "-"}</td>
                 </tr>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Contornos
                   </td>
                   <td className="p-2">{props.sides.join(", ") || "-"}</td>
                 </tr>
                 <tr>
-                  <td className="w-1/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Ensaladas
                   </td>
                   <td className="p-2">{props.salads.join(", ") || "-"}</td>
@@ -185,18 +198,18 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
             <h2 className="text-[12pt] font-bold uppercase tracking-wider text-[#fd0200]">
               Resumen de cotización
             </h2>
-            <table className="mt-2 w-full border-collapse border border-gray-300 text-[10pt]">
+            <table className="mt-2 w-full border-collapse border border-[#d1d5db] text-[10pt]">
               <tbody>
-                <tr className="border-b border-gray-200">
-                  <td className="w-2/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb]">
+                  <td className="w-2/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Servicio de carnes
                   </td>
                   <td className="p-2 text-right font-mono">
                     {formatCurrency(props.baseCost)}
                   </td>
                 </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="w-2/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb]">
+                  <td className="w-2/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Logística / traslado
                     {props.isTravelDoubled && (
                       <span className="ml-1 text-[8pt] text-[#fd0200]">
@@ -208,11 +221,11 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                     {formatCurrency(props.travelCost)}
                   </td>
                 </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="w-2/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                <tr className="border-b border-[#e5e7eb]">
+                  <td className="w-2/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Hospedaje de parrilleros
                     {props.grillMastersCount > 0 && (
-                      <span className="ml-1 text-[8pt] text-gray-500">
+                      <span className="ml-1 text-[8pt] text-[#6b7280]">
                         ({props.grillMastersCount} parrilleros)
                       </span>
                     )}
@@ -222,13 +235,13 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                   </td>
                 </tr>
                 {hasMargin && (
-                  <tr className="border-b border-gray-200 bg-gray-50">
-                    <td className="w-2/3 border-r border-gray-200 p-2 font-semibold text-gray-700">
+                  <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
+                    <td className="w-2/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                       Ajuste administrativo
                       <span
                         className={`ml-1 text-[8pt] ${
                           props.ownerMargin > 0
-                            ? "text-green-600"
+                            ? "text-[#16a34a]"
                             : "text-[#fd0200]"
                         }`}
                       >
@@ -239,7 +252,7 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                     <td
                       className={`p-2 text-right font-mono ${
                         props.ownerMargin > 0
-                          ? "text-green-600"
+                          ? "text-[#16a34a]"
                           : "text-[#fd0200]"
                       }`}
                     >
@@ -247,8 +260,8 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                     </td>
                   </tr>
                 )}
-                <tr className="bg-black text-white">
-                  <td className="w-2/3 border-r border-gray-700 p-3 font-bold uppercase">
+                <tr className="bg-[#000000] text-[#ffffff]">
+                  <td className="w-2/3 border-r border-[#374151] p-3 font-bold uppercase">
                     Total estimado
                   </td>
                   <td className="p-3 text-right font-mono font-bold">
@@ -260,10 +273,10 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
           </section>
         </main>
 
-        <footer className="mt-10 border-t border-gray-300 pt-4 text-[8pt] text-gray-600">
+        <footer className="mt-10 border-t border-[#d1d5db] pt-4 text-[8pt] text-[#4b5563]">
           <div className="flex items-start justify-between gap-8">
             <div className="flex-1">
-              <p className="font-semibold text-black">Notas comerciales:</p>
+              <p className="font-semibold text-[#000000]">Notas comerciales:</p>
               <ul className="mt-1 list-disc space-y-1 pl-4">
                 <li>
                   Cotización sujeta a confirmación y disponibilidad de fecha.
@@ -278,13 +291,13 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
               </ul>
             </div>
             <div className="w-40 text-center">
-              <div className="mx-auto h-16 w-16 rounded-full border-2 border-[#fd0200] bg-gray-50 p-3">
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-[#fd0200] text-[7pt] font-bold text-white">
+              <div className="mx-auto h-16 w-16 rounded-full border-2 border-[#fd0200] bg-[#f9fafb] p-3">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-[#fd0200] text-[7pt] font-bold text-[#ffffff]">
                   AL
                 </div>
               </div>
-              <p className="mt-2 font-semibold text-black">Sello de validación</p>
-              <p className="text-[7pt] text-gray-500">Alto Linaje</p>
+              <p className="mt-2 font-semibold text-[#000000]">Sello de validación</p>
+              <p className="text-[7pt] text-[#6b7280]">Alto Linaje</p>
             </div>
           </div>
         </footer>

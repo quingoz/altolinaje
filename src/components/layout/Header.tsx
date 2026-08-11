@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { Flame, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
@@ -45,7 +46,7 @@ export default function Header() {
     };
   }, [mobileOpen]);
 
-  const handleLogoClick = () => {
+  const handleLogoClick = (e?: React.MouseEvent) => {
     const next = logoClicks + 1;
     setLogoClicks(next);
 
@@ -55,6 +56,7 @@ export default function Header() {
     if (next >= 3) {
       setLogoClicks(0);
       if (clickTimer.current) clearTimeout(clickTimer.current);
+      e?.preventDefault();
       router.push("/?admin=true");
     }
   };
@@ -72,15 +74,17 @@ export default function Header() {
           <Link
             href="/"
             onClick={handleLogoClick}
-            className="flex items-center gap-3"
+            className="flex items-center"
             aria-label="Alto Linaje - Inicio"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black text-[#fd0200]">
-              <Flame className="h-5 w-5" />
-            </span>
-            <span className="text-xl font-semibold tracking-tight text-white">
-              Alto <span className="text-[#fd0200]">Linaje</span>
-            </span>
+            <Image
+              src="/images/logo.png"
+              alt="Alto Linaje"
+              width={140}
+              height={50}
+              priority
+              className="h-10 w-auto"
+            />
           </Link>
 
           <nav
@@ -147,14 +151,17 @@ export default function Header() {
                 <Link
                   href="/"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3"
+                  className="flex items-center"
+                  aria-label="Alto Linaje - Inicio"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black text-[#fd0200]">
-                    <Flame className="h-5 w-5" />
-                  </span>
-                  <span className="text-xl font-semibold tracking-tight text-white">
-                    Alto <span className="text-[#fd0200]">Linaje</span>
-                  </span>
+                  <Image
+                    src="/images/logo.png"
+                    alt="Alto Linaje"
+                    width={140}
+                    height={50}
+                    priority
+                    className="h-10 w-auto"
+                  />
                 </Link>
                 <button
                   type="button"

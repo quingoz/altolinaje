@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -398,12 +398,24 @@ function FloatingBar({
                 step={1}
                 value={ownerMargin}
                 onChange={(e) => onMarginChange(Number(e.target.value))}
-                className="w-24 rounded-lg border border-white/10 bg-[#16181d] px-2 py-1 text-right text-sm text-white outline-none focus:border-[#fd0200]"
+                disabled={!ready}
+                className={cn(
+                  "w-24 rounded-lg border px-2 py-1 text-right text-sm outline-none",
+                  ready
+                    ? "border-white/10 bg-[#16181d] text-white focus:border-[#fd0200]"
+                    : "cursor-not-allowed border-white/5 bg-white/5 text-white/30"
+                )}
               />
               <button
                 type="button"
                 onClick={onPDF}
-                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-white/90"
+                disabled={!ready}
+                className={cn(
+                  "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                  ready
+                    ? "bg-white text-black hover:bg-white/90"
+                    : "cursor-not-allowed bg-white/10 text-white/40"
+                )}
               >
                 <FileDown className="h-4 w-4" />
                 PDF oficial
@@ -463,10 +475,44 @@ function FloatingBar({
 const OWNER_PIN = "1973";
 const OWNER_STORAGE_KEY = "alto-linaje-owner";
 
-function generateQuoteCode() {
-  const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  const suffix = Math.floor(1000 + Math.random() * 9000);
-  return `AL-${date}-${suffix}`;
+function useClientOnly() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+}
+
+function getStoredOwner() {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(OWNER_STORAGE_KEY) === "true";
+}
+
+function subscribeToOwner(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === OWNER_STORAGE_KEY) callback();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => window.removeEventListener("storage", onStorage);
+}
+
+function setStoredOwner(value: boolean) {
+  if (typeof window === "undefined") return;
+  const str = value ? "true" : "false";
+  if (localStorage.getItem(OWNER_STORAGE_KEY) === str) return;
+  localStorage.setItem(OWNER_STORAGE_KEY, str);
+  window.dispatchEvent(
+    new StorageEvent("storage", { key: OWNER_STORAGE_KEY, newValue: str })
+  );
+}
+
+function useStoredOwner() {
+  return useSyncExternalStore(
+    subscribeToOwner,
+    getStoredOwner,
+    () => false
+  );
 }
 
 export default function EventCalculator() {
@@ -491,25 +537,23 @@ export default function EventCalculator() {
     searchParams?.get("admin") === "true" ||
     searchParams?.get("mode") === "owner";
 
-  const [localOwner, setLocalOwner] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem(OWNER_STORAGE_KEY) === "true";
-  });
+  const isClient = useClientOnly();
+  const storedOwner = useStoredOwner();
+
   const [forceLogout, setForceLogout] = useState(false);
   const [ownerMargin, setOwnerMargin] = useState(0);
   const [showPinModal, setShowPinModal] = useState(false);
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState(false);
 
-  const [quoteCode] = useState(generateQuoteCode);
   const pdfRef = useRef<OwnerPDFRef>(null);
 
   const [ownerPhone] = useState("584000000000");
 
-  const isOwner = (localOwner || urlAdmin) && !forceLogout;
+  const isOwner = isClient && (storedOwner || urlAdmin) && !forceLogout;
 
   useEffect(() => {
-    localStorage.setItem(OWNER_STORAGE_KEY, isOwner ? "true" : "false");
+    setStoredOwner(isOwner);
   }, [isOwner]);
 
   const currentCities = VENEZUELA_LOCATIONS[selectedState] || ["Otra"];
@@ -618,7 +662,7 @@ export default function EventCalculator() {
 
   const handlePinSubmit = () => {
     if (pin === OWNER_PIN) {
-      setLocalOwner(true);
+      setStoredOwner(true);
       setForceLogout(false);
       setPin("");
       setPinError(false);
@@ -630,7 +674,7 @@ export default function EventCalculator() {
   };
 
   const handleLogoutOwner = () => {
-    setLocalOwner(false);
+    setStoredOwner(false);
     setForceLogout(true);
     setOwnerMargin(0);
   };
@@ -1047,10 +1091,9 @@ export default function EventCalculator() {
         )}
       </AnimatePresence>
 
-      {quote && (
+      {isClient && quote && (
         <OwnerPDF
           ref={pdfRef}
-          quoteCode={quoteCode}
           eventDate={eventDate}
           pax={pax}
           state={selectedState}
