@@ -1,6 +1,8 @@
 "use client";
 
+import html2canvas from "html2canvas";
 import Image from "next/image";
+import { jsPDF } from "jspdf";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
 export interface OwnerPDFData {
@@ -55,36 +57,51 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
       download: async () => {
         if (!templateRef.current) return;
 
-        const { default: html2pdf } = await import("html2pdf.js");
+        const el = templateRef.current;
+        const originalPosition = el.style.position;
+        const originalLeft = el.style.left;
+        const originalTop = el.style.top;
+        const originalZIndex = el.style.zIndex;
+        const originalTransform = el.style.transform;
 
-        html2pdf()
-          .from(templateRef.current)
-          .set({
-            margin: 0,
-            filename: `alto-linaje-cotizacion-${quoteCode}.pdf`,
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: {
-              scale: 2,
-              useCORS: true,
-              logging: false,
-              onclone: (doc: Document) => {
-                const el = doc.getElementById("owner-pdf-template");
-                if (el) {
-                  el.style.position = "static";
-                  el.style.left = "0";
-                  el.style.top = "0";
-                  el.style.transform = "none";
-                  el.style.zIndex = "1";
-                }
-              },
+        el.style.position = "absolute";
+        el.style.left = "0";
+        el.style.top = "0";
+        el.style.zIndex = "-1";
+        el.style.transform = "none";
+
+        try {
+          const canvas = await html2canvas(el, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            onclone: (doc: Document) => {
+              const cloned = doc.getElementById("owner-pdf-template");
+              if (cloned) {
+                cloned.style.position = "static";
+                cloned.style.left = "0";
+                cloned.style.top = "0";
+                cloned.style.transform = "none";
+                cloned.style.zIndex = "1";
+              }
             },
-            jsPDF: {
-              unit: "pt",
-              format: "a4",
-              orientation: "portrait",
-            },
-          })
-          .save();
+          });
+
+          const imgData = canvas.toDataURL("image/jpeg", 1.0);
+          const pdf = new jsPDF("p", "pt", "a4");
+
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+          pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, imgHeight);
+          pdf.save(`alto-linaje-cotizacion-${quoteCode}.pdf`);
+        } finally {
+          el.style.position = originalPosition;
+          el.style.left = originalLeft;
+          el.style.top = originalTop;
+          el.style.zIndex = originalZIndex;
+          el.style.transform = originalTransform;
+        }
       },
     }));
 
