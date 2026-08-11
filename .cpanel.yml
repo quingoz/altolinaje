@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/agustinguanipa/welcoming-azure-porpoise.162-254-39-57.cpanel.site
+    - export DEPLOYPATH=/home/agustinguanipa/welcoming-azure-porpoise.162-254-39-63.cpanel.site
     - /bin/cp -R dist/* $DEPLOYPATH
