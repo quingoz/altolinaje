@@ -66,11 +66,11 @@ export default function Header() {
       <header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/10 transition-all duration-300",
-          "bg-black/60 backdrop-blur-xl",
-          scrolled && "bg-black/80 shadow-2xl shadow-black/30"
+          "bg-[#0b0c0e]/60 backdrop-blur-xl",
+          scrolled && "bg-[#0b0c0e]/80 shadow-2xl shadow-black/30"
         )}
       >
-        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link
             href="/"
             onClick={handleLogoClick}
@@ -78,12 +78,12 @@ export default function Header() {
             aria-label="Alto Linaje - Inicio"
           >
             <Image
-              src="/images/logo.png"
+              src="/images/logo.png?v=2"
               alt="Alto Linaje"
-              width={140}
-              height={50}
+              width={220}
+              height={70}
               priority
-              className="h-10 w-auto"
+              className="h-10 w-auto object-contain sm:h-14 md:h-16"
             />
           </Link>
 
@@ -155,12 +155,12 @@ export default function Header() {
                   aria-label="Alto Linaje - Inicio"
                 >
                   <Image
-                    src="/images/logo.png"
+                    src="/images/logo.png?v=2"
                     alt="Alto Linaje"
-                    width={140}
-                    height={50}
+                    width={220}
+                    height={70}
                     priority
-                    className="h-10 w-auto"
+                    className="h-10 w-auto object-contain sm:h-14 md:h-16"
                   />
                 </Link>
                 <button

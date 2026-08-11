@@ -24,11 +24,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://altolinaje.com"),
   title: {
-    default: "Alto Linaje | Parrilla de Alto Nivel para Eventos",
+    default: "Alto Linaje - Chef Privado & Catering",
     template: "%s | Alto Linaje",
   },
   description:
-    "Carnes ahumadas, en vara y servicio gourmet en sitio. Cotiza tu evento con Alto Linaje y sorprende a tus invitados.",
+    "Servicio exclusivo de carnes y parrillas para eventos.",
   keywords: [
     "parrilla",
     "eventos",
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/images/favicon.png",
-    shortcut: "/images/favicon.png",
-    apple: "/images/favicon.png",
+    icon: "/images/favicon.png?v=2",
+    shortcut: "/images/favicon.png?v=2",
+    apple: "/images/favicon.png?v=2",
   },
 };
 

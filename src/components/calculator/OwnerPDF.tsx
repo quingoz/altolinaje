@@ -67,6 +67,16 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
               scale: 2,
               useCORS: true,
               logging: false,
+              onclone: (doc: Document) => {
+                const el = doc.getElementById("owner-pdf-template");
+                if (el) {
+                  el.style.position = "static";
+                  el.style.left = "0";
+                  el.style.top = "0";
+                  el.style.transform = "none";
+                  el.style.zIndex = "1";
+                }
+              },
             },
             jsPDF: {
               unit: "pt",
@@ -85,19 +95,20 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
     return (
       <div
         ref={templateRef}
+        id="owner-pdf-template"
         className="fixed left-[-9999px] top-0 w-[210mm] bg-[#ffffff] p-[15mm] text-[11pt] text-[#000000]"
         style={{ zIndex: -1 }}
       >
         <header className="flex items-center justify-between rounded-t-2xl bg-[#0b0c0e] p-4 border-b-2 border-[#fd0200]">
           <div className="flex items-center gap-3">
             <Image
-              src="/images/logo.png"
+              src="/images/logo.png?v=2"
               alt="Alto Linaje"
-              width={140}
-              height={50}
+              width={220}
+              height={70}
               unoptimized
               priority
-              className="h-10 w-auto"
+              className="h-10 w-auto object-contain sm:h-14 md:h-16"
             />
             <div>
               <h1 className="text-[18pt] font-bold leading-none text-[#ffffff]">

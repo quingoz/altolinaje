@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { Camera, Flame, MapPin } from "lucide-react";
+import { Camera, MapPin } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
@@ -22,13 +23,15 @@ export default function Footer() {
     <footer className="border-t border-white/10 bg-[#0b0c0e] px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-3 lg:grid-cols-4">
         <div className="lg:col-span-1">
-          <Link href="/" className="flex items-center gap-3" aria-label="Alto Linaje - Inicio">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black text-[#fd0200]">
-              <Flame className="h-5 w-5" />
-            </span>
-            <span className="text-xl font-semibold tracking-tight text-white">
-              Alto <span className="text-[#fd0200]">Linaje</span>
-            </span>
+          <Link href="/" className="flex items-center" aria-label="Alto Linaje - Inicio">
+            <Image
+              src="/images/logo.png?v=2"
+              alt="Alto Linaje"
+              width={220}
+              height={70}
+              priority
+              className="h-10 w-auto object-contain sm:h-12"
+            />
           </Link>
           <p className="mt-4 max-w-xs text-sm text-white/60">
             Experiencias de parrilla de alto linaje. Carnes ahumadas, en vara y
