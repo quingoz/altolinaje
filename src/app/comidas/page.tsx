@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import PlaceholderImage from "@/components/ui/PlaceholderImage";
 import { ChefHat, Carrot, Leaf } from "lucide-react";
 import rateConfigData from "@/data/rates.json";
@@ -72,7 +73,7 @@ function MenuSection({
   note,
 }: {
   id: string;
-  items: { id: string; name: string; description?: string }[];
+  items: { id: string; name: string; description?: string; image?: string }[];
   type: "recipes" | "sides" | "salads";
   note: string;
 }) {
@@ -102,10 +103,21 @@ function MenuSection({
             key={item.id}
             className="group overflow-hidden rounded-2xl border border-white/10 bg-[#16181d] transition-colors hover:border-[#fd0200]/50"
           >
-            <PlaceholderImage
-              alt={`Foto de ${item.name}`}
-              className="aspect-[4/3] w-full"
-            />
+            {item.image ? (
+              <div className="relative aspect-[4/3] w-full overflow-hidden">
+                <Image
+                  src={item.image}
+                  alt={`Foto de ${item.name}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <PlaceholderImage
+                alt={`Foto de ${item.name}`}
+                className="aspect-[4/3] w-full"
+              />
+            )}
             <div className="p-5">
               <h3 className="text-lg font-semibold text-white">{item.name}</h3>
               {item.description && (

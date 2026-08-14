@@ -59,6 +59,8 @@ export interface MenuModality {
   minRecipes: number;
   maxRecipes: number;
   description: string;
+  /** Ruta de la imagen representativa de la modalidad (relativa a /public). */
+  image?: string;
 }
 
 /** Opción de menú genérica (receta, acompañante o ensalada). */
@@ -66,6 +68,8 @@ export interface MenuOption {
   id: string;
   name: string;
   description?: string;
+  /** Ruta de la imagen de la opción (relativa a /public). Si no se define, se usa un ícono por defecto. */
+  image?: string;
 }
 
 /** Estructura completa del archivo de configuración de tarifas (rates.json). */

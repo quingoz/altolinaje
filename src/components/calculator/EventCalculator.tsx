@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -10,8 +11,10 @@ import {
   Carrot,
   Check,
   ChefHat,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Clock,
   FileDown,
   Flame,
@@ -84,13 +87,19 @@ const RECIPE_ICONS: Record<string, LucideIcon> = {
   pechuga_grill: ChefHat,
 };
 
+const MAX_SIDES = 3;
+const MAX_SALADS = 2;
+
 const STEP_TITLES = [
   "Datos del evento",
   "Modalidad",
   "Recetas",
   "Contornos",
   "Ensaladas",
+  "Resumen",
 ];
+
+const TOTAL_STEPS = STEP_TITLES.length;
 
 function cn(...classes: (string | false | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -197,21 +206,34 @@ function ModalityCard({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "relative w-full overflow-hidden rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] p-6 text-left transition-colors",
+        "relative w-full overflow-hidden rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] text-left transition-colors",
         selected ? "border-[#fd0200]" : "border-white/10 hover:border-white/30"
       )}
     >
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#fd0200]/10 text-[#fd0200]">
-        <Icon className="h-8 w-8" />
+      {modality.image && (
+        <div className="relative h-40 w-full overflow-hidden">
+          <Image
+            src={modality.image}
+            alt={modality.name}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c0e] to-transparent" />
+        </div>
+      )}
+      <div className="p-6">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#fd0200]/10 text-[#fd0200]">
+          <Icon className="h-8 w-8" />
+        </div>
+        <h3 className="text-xl font-semibold text-white">{modality.name}</h3>
+        <p className="mt-2 text-sm text-white/60">{modality.description}</p>
+        <p className="mt-4 text-xs font-medium text-[#fd0200]">
+          Requiere{" "}
+          {modality.minRecipes === modality.maxRecipes
+            ? `${modality.minRecipes} recetas`
+            : `de ${modality.minRecipes} a ${modality.maxRecipes} recetas`}
+        </p>
       </div>
-      <h3 className="text-xl font-semibold text-white">{modality.name}</h3>
-      <p className="mt-2 text-sm text-white/60">{modality.description}</p>
-      <p className="mt-4 text-xs font-medium text-[#fd0200]">
-        Requiere{" "}
-        {modality.minRecipes === modality.maxRecipes
-          ? `${modality.minRecipes} recetas`
-          : `de ${modality.minRecipes} a ${modality.maxRecipes} recetas`}
-      </p>
     </motion.button>
   );
 }
@@ -219,11 +241,13 @@ function ModalityCard({
 function RecipeCard({
   recipe,
   selected,
+  disabled,
   onToggle,
   onView,
 }: {
   recipe: MenuOption;
   selected: boolean;
+  disabled?: boolean;
   onToggle: () => void;
   onView: () => void;
 }) {
@@ -231,14 +255,24 @@ function RecipeCard({
 
   return (
     <motion.div
-      whileHover={{ y: -4 }}
+      whileHover={disabled ? undefined : { y: -4 }}
       className={cn(
-        "group relative overflow-hidden rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e]",
-        selected ? "border-[#fd0200]" : "border-white/10"
+        "group relative overflow-hidden rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] transition-opacity",
+        selected ? "border-[#fd0200]" : "border-white/10",
+        disabled && !selected && "opacity-40 grayscale"
       )}
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-[#1f2229] to-[#0b0c0e]">
-        <Icon className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 text-[#fd0200]/50" />
+        {recipe.image ? (
+          <Image
+            src={recipe.image}
+            alt={recipe.name}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <Icon className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 text-[#fd0200]/50" />
+        )}
         <button
           type="button"
           onClick={onView}
@@ -258,14 +292,17 @@ function RecipeCard({
         <button
           type="button"
           onClick={onToggle}
+          disabled={disabled && !selected}
           className={cn(
             "mt-4 w-full rounded-lg py-2 text-sm font-medium transition-colors",
             selected
               ? "bg-[#fd0200] text-white hover:bg-red-600"
+              : disabled
+              ? "cursor-not-allowed border border-white/10 text-white/30"
               : "border border-white/20 text-white hover:border-[#fd0200] hover:text-[#fd0200]"
           )}
         >
-          {selected ? "Seleccionado" : "Seleccionar"}
+          {selected ? "Seleccionado" : disabled ? "Límite alcanzado" : "Seleccionar"}
         </button>
       </div>
     </motion.div>
@@ -275,11 +312,13 @@ function RecipeCard({
 function OptionCard({
   option,
   selected,
+  disabled,
   onClick,
   icon: Icon,
 }: {
   option: MenuOption;
   selected: boolean;
+  disabled?: boolean;
   onClick: () => void;
   icon: LucideIcon;
 }) {
@@ -287,11 +326,13 @@ function OptionCard({
     <motion.button
       type="button"
       onClick={onClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      disabled={disabled && !selected}
+      whileHover={disabled && !selected ? undefined : { scale: 1.02 }}
+      whileTap={disabled && !selected ? undefined : { scale: 0.98 }}
       className={cn(
         "relative flex items-center gap-4 rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] p-4 text-left transition-colors",
-        selected ? "border-[#fd0200]" : "border-white/10 hover:border-white/30"
+        selected ? "border-[#fd0200]" : "border-white/10 hover:border-white/30",
+        disabled && !selected && "cursor-not-allowed opacity-40 hover:border-white/10"
       )}
     >
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#fd0200]/10 text-[#fd0200]">
@@ -327,6 +368,41 @@ function ValidationBanner({
   );
 }
 
+function SummaryCard({
+  title,
+  onEdit,
+  children,
+}: {
+  title: string;
+  onEdit: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <h4 className="font-semibold text-white">{title}</h4>
+        <button
+          type="button"
+          onClick={onEdit}
+          className="text-xs font-medium text-[#fd0200] hover:underline"
+        >
+          Editar
+        </button>
+      </div>
+      <div className="space-y-1.5">{children}</div>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 text-sm">
+      <span className="text-white/50">{label}</span>
+      <span className="font-medium text-white">{value}</span>
+    </div>
+  );
+}
+
 function FloatingBar({
   quote,
   adjustedTotal,
@@ -348,121 +424,220 @@ function FloatingBar({
   ownerMargin: number;
   onMarginChange: (value: number) => void;
 }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const ownerControls = (
+    <>
+      {isOwner && (
+        <div className="flex w-full flex-col items-end gap-2 sm:flex-row sm:items-center">
+          <span className="text-xs text-white/50">Ajuste admin (%)</span>
+          <input
+            type="number"
+            min={-50}
+            max={50}
+            step={1}
+            value={ownerMargin}
+            onChange={(e) => onMarginChange(Number(e.target.value))}
+            disabled={!ready}
+            className={cn(
+              "w-24 rounded-lg border px-2 py-1 text-right text-sm outline-none",
+              ready
+                ? "border-white/10 bg-[#16181d] text-white focus:border-[#fd0200]"
+                : "cursor-not-allowed border-white/5 bg-white/5 text-white/30"
+            )}
+          />
+          <button
+            type="button"
+            onClick={onPDF}
+            disabled={!ready}
+            className={cn(
+              "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+              ready
+                ? "bg-white text-black hover:bg-white/90"
+                : "cursor-not-allowed bg-white/10 text-white/40"
+            )}
+          >
+            <FileDown className="h-4 w-4" />
+            PDF oficial
+          </button>
+        </div>
+      )}
+
+      <p className="max-w-sm text-right text-xs text-white/40">
+        Nota: El precio de hospedaje y logística está sujeto a ajustes en la
+        negociación final.
+        {isOwner && ownerMargin !== 0 && (
+          <span className="ml-1 text-[#fd0200]">
+            Ajuste aplicado: {ownerMargin > 0 ? "+" : ""}
+            {ownerMargin}%.
+          </span>
+        )}
+      </p>
+    </>
+  );
+
   return (
     <motion.div
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2, duration: 0.4 }}
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0b0c0e]/95 px-4 py-4 backdrop-blur-md"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0b0c0e]/95 backdrop-blur-md"
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div>
-            <p className="text-xs text-white/50">Carnes</p>
-            <p className="text-lg font-semibold text-white">{formatCurrency(quote.baseCost)}</p>
-          </div>
-          <div>
-            <p className="text-xs text-white/50">Traslado</p>
-            <p className="text-lg font-semibold text-white">
-              {formatCurrency(quote.travelCost)}
-              {quote.isTravelDoubled && (
-                <span className="ml-1 text-xs text-[#fd0200]">x2</span>
+      <div className="mx-auto max-w-6xl px-4 py-3 lg:py-4">
+        {/* Compact mobile bar */}
+        <div className="lg:hidden">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => setDetailsOpen((o) => !o)}
+              className="flex items-center gap-2 text-left"
+              aria-expanded={detailsOpen}
+            >
+              <div>
+                <p className="text-[10px] uppercase tracking-wide text-[#fd0200]">Total</p>
+                <p className="text-lg font-bold text-white">{formatCurrency(adjustedTotal)}</p>
+              </div>
+              {detailsOpen ? (
+                <ChevronDown className="h-4 w-4 text-white/50" />
+              ) : (
+                <ChevronUp className="h-4 w-4 text-white/50" />
               )}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-white/50">Hospedaje</p>
-            <p className="text-lg font-semibold text-white">
-              {formatCurrency(quote.lodgingCost)}
-              {quote.grillMastersCount > 0 && (
-                <span className="ml-1 text-xs text-white/50">
-                  ({quote.grillMastersCount} parrilleros)
-                </span>
-              )}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-[#fd0200]">TOTAL</p>
-            <p className="text-2xl font-bold text-white">{formatCurrency(adjustedTotal)}</p>
-          </div>
-        </div>
+            </button>
 
-        <div className="flex flex-col gap-3 lg:items-end">
-          {isOwner && (
-            <div className="flex w-full flex-col items-end gap-2 sm:flex-row sm:items-center">
-              <span className="text-xs text-white/50">Ajuste admin (%)</span>
-              <input
-                type="number"
-                min={-50}
-                max={50}
-                step={1}
-                value={ownerMargin}
-                onChange={(e) => onMarginChange(Number(e.target.value))}
-                disabled={!ready}
-                className={cn(
-                  "w-24 rounded-lg border px-2 py-1 text-right text-sm outline-none",
-                  ready
-                    ? "border-white/10 bg-[#16181d] text-white focus:border-[#fd0200]"
-                    : "cursor-not-allowed border-white/5 bg-white/5 text-white/30"
-                )}
-              />
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={onPDF}
+                onClick={onToggleOwner}
+                className={cn(
+                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors",
+                  isOwner
+                    ? "border-[#fd0200] bg-[#fd0200]/10 text-[#fd0200]"
+                    : "border-white/10 text-white/50"
+                )}
+                aria-label={isOwner ? "Cerrar modo administrador" : "Acceso administrador"}
+              >
+                {isOwner ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={onWhatsApp}
                 disabled={!ready}
                 className={cn(
-                  "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                  "flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
                   ready
-                    ? "bg-white text-black hover:bg-white/90"
+                    ? "bg-[#fd0200] text-white hover:bg-red-600"
                     : "cursor-not-allowed bg-white/10 text-white/40"
                 )}
               >
-                <FileDown className="h-4 w-4" />
-                PDF oficial
+                <MessageCircle className="h-4 w-4" />
+                Cotizar
               </button>
             </div>
-          )}
+          </div>
 
-          <p className="max-w-sm text-right text-xs text-white/40">
-            Nota: El precio de hospedaje y logística está sujeto a ajustes en la
-            negociación final.
-            {isOwner && ownerMargin !== 0 && (
-              <span className="ml-1 text-[#fd0200]">
-                Ajuste aplicado: {ownerMargin > 0 ? "+" : ""}
-                {ownerMargin}%.
-              </span>
+          <AnimatePresence>
+            {detailsOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-4 grid grid-cols-3 gap-3 border-t border-white/10 pt-4">
+                  <div>
+                    <p className="text-xs text-white/50">Carnes</p>
+                    <p className="text-sm font-semibold text-white">{formatCurrency(quote.baseCost)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-white/50">Traslado</p>
+                    <p className="text-sm font-semibold text-white">
+                      {formatCurrency(quote.travelCost)}
+                      {quote.isTravelDoubled && (
+                        <span className="ml-1 text-xs text-[#fd0200]">x2</span>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-white/50">Hospedaje</p>
+                    <p className="text-sm font-semibold text-white">
+                      {formatCurrency(quote.lodgingCost)}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-col items-end gap-3">{ownerControls}</div>
+              </motion.div>
             )}
-          </p>
+          </AnimatePresence>
+        </div>
 
-          <div className="flex items-center justify-end gap-3">
-            <button
-              type="button"
-              onClick={onToggleOwner}
-              className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
-                isOwner
-                  ? "border-[#fd0200] bg-[#fd0200]/10 text-[#fd0200]"
-                  : "border-white/10 text-white/50 hover:border-white/30 hover:text-white"
-              )}
-              aria-label={isOwner ? "Cerrar modo administrador" : "Acceso administrador"}
-            >
-              {isOwner ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-            </button>
+        {/* Full desktop bar */}
+        <div className="hidden lg:flex lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div>
+              <p className="text-xs text-white/50">Carnes</p>
+              <p className="text-lg font-semibold text-white">{formatCurrency(quote.baseCost)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-white/50">Traslado</p>
+              <p className="text-lg font-semibold text-white">
+                {formatCurrency(quote.travelCost)}
+                {quote.isTravelDoubled && (
+                  <span className="ml-1 text-xs text-[#fd0200]">x2</span>
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-white/50">Hospedaje</p>
+              <p className="text-lg font-semibold text-white">
+                {formatCurrency(quote.lodgingCost)}
+                {quote.grillMastersCount > 0 && (
+                  <span className="ml-1 text-xs text-white/50">
+                    ({quote.grillMastersCount} parrilleros)
+                  </span>
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-[#fd0200]">TOTAL</p>
+              <p className="text-2xl font-bold text-white">{formatCurrency(adjustedTotal)}</p>
+            </div>
+          </div>
 
-            <button
-              type="button"
-              onClick={onWhatsApp}
-              disabled={!ready}
-              className={cn(
-                "flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors",
-                ready
-                  ? "bg-[#fd0200] text-white hover:bg-red-600"
-                  : "cursor-not-allowed bg-white/10 text-white/40"
-              )}
-            >
-              <MessageCircle className="h-5 w-5" />
-              Cotizar por WhatsApp
-            </button>
+          <div className="flex flex-col gap-3 lg:items-end">
+            {ownerControls}
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={onToggleOwner}
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
+                  isOwner
+                    ? "border-[#fd0200] bg-[#fd0200]/10 text-[#fd0200]"
+                    : "border-white/10 text-white/50 hover:border-white/30 hover:text-white"
+                )}
+                aria-label={isOwner ? "Cerrar modo administrador" : "Acceso administrador"}
+              >
+                {isOwner ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={onWhatsApp}
+                disabled={!ready}
+                className={cn(
+                  "flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors",
+                  ready
+                    ? "bg-[#fd0200] text-white hover:bg-red-600"
+                    : "cursor-not-allowed bg-white/10 text-white/40"
+                )}
+              >
+                <MessageCircle className="h-5 w-5" />
+                Cotizar por WhatsApp
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -533,6 +708,13 @@ export default function EventCalculator() {
 
   const [modalRecipe, setModalRecipe] = useState<MenuOption | null>(null);
 
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const stepCardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    stepCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [step]);
+
   const urlAdmin =
     searchParams?.get("admin") === "true" ||
     searchParams?.get("mode") === "owner";
@@ -585,8 +767,8 @@ export default function EventCalculator() {
       recipeCount <= selectedModality.maxRecipes
     : false;
 
-  const sidesValid = selectedSideIds.length >= 1 && selectedSideIds.length <= 3;
-  const saladsValid = selectedSaladIds.length <= 2;
+  const sidesValid = selectedSideIds.length >= 1 && selectedSideIds.length <= MAX_SIDES;
+  const saladsValid = selectedSaladIds.length <= MAX_SALADS;
   const step1Valid = pax >= 1 && selectedState.length > 0 && selectedCity.length > 0 && eventDate.length > 0;
 
   const canGoNext = () => {
@@ -606,22 +788,40 @@ export default function EventCalculator() {
     setSelectedCity(cities[0]);
   };
 
+  const scrollToNextButton = () => {
+    requestAnimationFrame(() => {
+      nextButtonRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
+
   const toggleRecipe = (id: string) => {
-    setSelectedRecipeIds((prev) =>
-      prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]
-    );
+    setSelectedRecipeIds((prev) => {
+      if (prev.includes(id)) return prev.filter((r) => r !== id);
+      if (selectedModality && prev.length >= selectedModality.maxRecipes) return prev;
+      const next = [...prev, id];
+      if (selectedModality && next.length >= selectedModality.maxRecipes) scrollToNextButton();
+      return next;
+    });
   };
 
   const toggleSide = (id: string) => {
-    setSelectedSideIds((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
-    );
+    setSelectedSideIds((prev) => {
+      if (prev.includes(id)) return prev.filter((s) => s !== id);
+      if (prev.length >= MAX_SIDES) return prev;
+      const next = [...prev, id];
+      if (next.length >= MAX_SIDES) scrollToNextButton();
+      return next;
+    });
   };
 
   const toggleSalad = (id: string) => {
-    setSelectedSaladIds((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
-    );
+    setSelectedSaladIds((prev) => {
+      if (prev.includes(id)) return prev.filter((s) => s !== id);
+      if (prev.length >= MAX_SALADS) return prev;
+      const next = [...prev, id];
+      if (next.length >= MAX_SALADS) scrollToNextButton();
+      return next;
+    });
   };
 
   const getMenuNames = () => ({
@@ -809,6 +1009,9 @@ export default function EventCalculator() {
                   key={recipe.id}
                   recipe={recipe}
                   selected={selectedRecipeIds.includes(recipe.id)}
+                  disabled={
+                    !!selectedModality && recipeCount >= selectedModality.maxRecipes
+                  }
                   onToggle={() => toggleRecipe(recipe.id)}
                   onView={() => setModalRecipe(recipe)}
                 />
@@ -832,6 +1035,7 @@ export default function EventCalculator() {
                   key={side.id}
                   option={side}
                   selected={selectedSideIds.includes(side.id)}
+                  disabled={selectedSideIds.length >= MAX_SIDES}
                   onClick={() => toggleSide(side.id)}
                   icon={Carrot}
                 />
@@ -855,6 +1059,7 @@ export default function EventCalculator() {
                   key={salad.id}
                   option={salad}
                   selected={selectedSaladIds.includes(salad.id)}
+                  disabled={selectedSaladIds.length >= MAX_SALADS}
                   onClick={() => toggleSalad(salad.id)}
                   icon={Leaf}
                 />
@@ -863,13 +1068,127 @@ export default function EventCalculator() {
           </section>
         );
 
+      case 6: {
+        const menuNames = getMenuNames();
+        return (
+          <section className="space-y-6" key="step-6">
+            <ValidationBanner valid={allValid}>
+              {allValid
+                ? "Todo listo. Revisa el resumen antes de enviar tu cotización."
+                : "Hay pasos incompletos. Vuelve atrás para completarlos."}
+            </ValidationBanner>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <SummaryCard title="Datos del evento" onEdit={() => setStep(1)}>
+                <SummaryRow label="Personas" value={`${pax} pax`} />
+                <SummaryRow label="Ubicación" value={`${selectedCity}, ${selectedState}`} />
+                <SummaryRow label="Distancia" value={`${distanceKm} km`} />
+                <SummaryRow label="Fecha" value={eventDate || "Sin definir"} />
+              </SummaryCard>
+
+              <SummaryCard title="Modalidad" onEdit={() => setStep(2)}>
+                {selectedModality ? (
+                  <>
+                    <SummaryRow label="Servicio" value={selectedModality.name} />
+                    <p className="pt-1 text-sm text-white/60">
+                      {selectedModality.description}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-white/40">Sin modalidad seleccionada.</p>
+                )}
+              </SummaryCard>
+
+              <SummaryCard title="Recetas" onEdit={() => setStep(3)}>
+                {menuNames.recipes.length > 0 ? (
+                  <ul className="space-y-1 text-sm text-white/70">
+                    {menuNames.recipes.map((name) => (
+                      <li key={name}>• {name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-white/40">Sin recetas seleccionadas.</p>
+                )}
+              </SummaryCard>
+
+              <SummaryCard title="Contornos y ensaladas" onEdit={() => setStep(4)}>
+                {menuNames.sides.length > 0 || menuNames.salads.length > 0 ? (
+                  <ul className="space-y-1 text-sm text-white/70">
+                    {[...menuNames.sides, ...menuNames.salads].map((name) => (
+                      <li key={name}>• {name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-white/40">Sin contornos ni ensaladas seleccionados.</p>
+                )}
+              </SummaryCard>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-[#0b0c0e] p-6">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div>
+                  <p className="text-xs text-white/50">Carnes</p>
+                  <p className="text-lg font-semibold text-white">{formatCurrency(quote.baseCost)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-white/50">Traslado</p>
+                  <p className="text-lg font-semibold text-white">{formatCurrency(quote.travelCost)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-white/50">Hospedaje</p>
+                  <p className="text-lg font-semibold text-white">{formatCurrency(quote.lodgingCost)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-[#fd0200]">TOTAL</p>
+                  <p className="text-2xl font-bold text-white">{formatCurrency(adjustedTotal)}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={handleWhatsApp}
+                disabled={!allValid}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors",
+                  allValid
+                    ? "bg-[#fd0200] text-white hover:bg-red-600"
+                    : "cursor-not-allowed bg-white/10 text-white/40"
+                )}
+              >
+                <MessageCircle className="h-5 w-5" />
+                Enviar cotización por WhatsApp
+              </button>
+
+              {isOwner && (
+                <button
+                  type="button"
+                  onClick={() => pdfRef.current?.download()}
+                  disabled={!allValid}
+                  className={cn(
+                    "flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors",
+                    allValid
+                      ? "bg-white text-black hover:bg-white/90"
+                      : "cursor-not-allowed bg-white/10 text-white/40"
+                  )}
+                >
+                  <FileDown className="h-5 w-5" />
+                  Descargar PDF oficial
+                </button>
+              )}
+            </div>
+          </section>
+        );
+      }
+
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0c0e] px-4 py-12 font-sans text-white pb-40">
+    <div className="min-h-screen bg-[#0b0c0e] px-4 py-12 font-sans text-white pb-24 lg:pb-40">
       <div className="mx-auto max-w-6xl">
         <header className="mb-10 text-center">
           <div className="flex items-center justify-center gap-3">
@@ -888,23 +1207,24 @@ export default function EventCalculator() {
           </p>
         </header>
 
-        <StepIndicator currentStep={step} />
+        <StepIndicator currentStep={step} total={TOTAL_STEPS} />
 
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
+            ref={stepCardRef}
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -20, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="rounded-3xl border border-white/10 bg-[#16181d] p-6 sm:p-10"
+            className="scroll-mt-28 rounded-3xl border border-white/10 bg-[#16181d] p-6 sm:p-10"
           >
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-xl font-semibold text-white">
                 {STEP_TITLES[step - 1]}
               </h2>
               <span className="text-sm text-white/40">
-                Paso {step} de 5
+                Paso {step} de {TOTAL_STEPS}
               </span>
             </div>
 
@@ -926,20 +1246,23 @@ export default function EventCalculator() {
                 Atrás
               </button>
 
-              <button
-                type="button"
-                onClick={() => step < 5 && setStep((s) => s + 1)}
-                disabled={!canGoNext()}
-                className={cn(
-                  "flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
-                  canGoNext()
-                    ? "bg-[#fd0200] text-white hover:bg-red-600"
-                    : "cursor-not-allowed bg-white/10 text-white/40"
-                )}
-              >
-                {step === 5 ? "Finalizar" : "Siguiente"}
-                {step < 5 && <ChevronRight className="h-4 w-4" />}
-              </button>
+              {step < TOTAL_STEPS && (
+                <button
+                  ref={nextButtonRef}
+                  type="button"
+                  onClick={() => setStep((s) => Math.min(TOTAL_STEPS, s + 1))}
+                  disabled={!canGoNext()}
+                  className={cn(
+                    "flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
+                    canGoNext()
+                      ? "bg-[#fd0200] text-white hover:bg-red-600"
+                      : "cursor-not-allowed bg-white/10 text-white/40"
+                  )}
+                >
+                  {step === TOTAL_STEPS - 1 ? "Ver resumen" : "Siguiente"}
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
@@ -987,10 +1310,19 @@ export default function EventCalculator() {
               </button>
 
               <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-[#1f2229] to-[#0b0c0e]">
-                {(() => {
-                  const Icon = RECIPE_ICONS[modalRecipe.id] || ChefHat;
-                  return <Icon className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 text-[#fd0200]/50" />;
-                })()}
+                {modalRecipe.image ? (
+                  <Image
+                    src={modalRecipe.image}
+                    alt={modalRecipe.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  (() => {
+                    const Icon = RECIPE_ICONS[modalRecipe.id] || ChefHat;
+                    return <Icon className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 text-[#fd0200]/50" />;
+                  })()
+                )}
               </div>
 
               <div className="p-8">

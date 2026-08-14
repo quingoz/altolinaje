@@ -32,22 +32,22 @@
   },
   "menuOptions": {
     "modalities": [
-      { "id": "self_service", "name": "Self-Services", "minRecipes": 2, "maxRecipes": 3, "description": "Servicio tipo buffet asistido." },
-      { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "Servicio dividido en dos tiempos." },
-      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Servicio continuo de cortes a la mesa." }
+      { "id": "self_service", "name": "Self-Services", "minRecipes": 2, "maxRecipes": 3, "description": "Nuestro equipo desplegara cada estacion de comida en los Chef and Dish. El servicio finaliza al momento que se agota la comida.", "image": "/images/mode-self-services.jpg" },
+      { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "800grs de proteina por persona prestadas en las cajas, servidas con una diferencia de 1,2 o 3 horas. La capacidad de cada caja es de 10 personas.", "image": "/images/mode-doble-tanda.jpg" },
+      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondran de una mesa de contornos y ensaladas para servirse al gusto. Mientras los chefs pasan directamente por las mesas sirviendo una rotacion constante de cortes.", "image": "/images/mode-rodizio.jpg" }
     ],
     "recipes": [
-      { "id": "lomo_cerdo", "name": "Lomo de Cerdo", "description": "Corte jugoso adobado con especias del campo." },
-      { "id": "puntas_ahumadas", "name": "Puntas Traseras Ahumadas", "description": "Lento ahumado a la leña." },
-      { "id": "costillas_bbq", "name": "Costillas de Cerdo BBQ", "description": "Ahumadas en salsa BBQ artesanal." },
+      { "id": "lomo_cerdo", "name": "Lomo de Cerdo", "description": "Con chicharron acompañado de salsa de chistorra y pimenton ahumado." },
+      { "id": "puntas_ahumadas", "name": "Puntas Traseras Ahumadas", "description": "Acompañada de salsa blanca de queso azul.", "image": "/images/recetas/PUNTAS-TRASERAS-AHUMADAS.jpg" },
+      { "id": "costillas_bbq", "name": "Costillas de Cerdo BBQ", "description": "Ahumadas en salsa BBQ." },
       { "id": "costillas_ajillo", "name": "Costillas de Cerdo al Ajillo", "description": "Ahumadas con toque de ajillo casero." },
-      { "id": "carne_vara", "name": "Tradicional Carne en Vara", "description": "Estilo llanero cocinado a fuego lento." },
-      { "id": "beef_wellington", "name": "Beef Wellington", "description": "Lomo envuelto en hojaldre y duxelles." },
-      { "id": "pork_belly", "name": "Pork Belly", "description": "Chicharrón crocante y carnoso." },
-      { "id": "picanha", "name": "Picanha Tradicional", "description": "Corte prime con capa de grasa crujiente." },
-      { "id": "churrasco_solomo", "name": "Churrasco de Solomo / Punta Grill", "description": "A la parrilla en su punto exacto." },
-      { "id": "pollo_vara", "name": "Pollo en Vara", "description": "Doradito y sazonado artesanalmente." },
-      { "id": "pechuga_grill", "name": "Churrasco o Pechuga de Pollo al Grill", "description": "Corte magro y jugoso." }
+      { "id": "carne_vara", "name": "Tradicional Carne en Vara", "description": "Acompañada de guasacaca.", "image": "/images/recetas/CARNE-EN-VARA.jpg" },
+      { "id": "beef_wellington", "name": "Beef Wellington", "description": "Lomito sellado a la parrilla envuelto en masa de hojaldre con mousse de champiñones y tocineta.", "image": "/images/recetas/BEEF-WELLINTONG.jpg" },
+      { "id": "pork_belly", "name": "Pork Belly", "description": "Con salsa de whisky.", "image": "/images/recetas/PORK-BELLY.jpg" },
+      { "id": "picanha", "name": "Picanha Tradicional", "description": "Con chimichurri.", "image": "/images/recetas/PICANHA-TRADICIONAL.jpg" },
+      { "id": "churrasco_solomo", "name": "Churrasco de Solomo / Punta Grill", "description": "Con salsa de vegetales tatemados." },
+      { "id": "pollo_vara", "name": "Pollo en Vara", "description": "Con guasacaca." },
+      { "id": "pechuga_grill", "name": "Churrasco o Pechuga de Pollo al Grill", "description": "Con salsa tatemada" }
     ],
     "sides": [
       { "id": "yuca", "name": "Yuca hervida/al vapor" },
