@@ -78,11 +78,11 @@ export function calculateQuote(
   // Asignación de sucursal
   const assignedBranch = getAssignedBranchName(state);
 
-  // Costo de traslado
-  const customRate = rateConfig.travel.customCityRates[city];
+  // Costo de traslado: tarifa fija por estado + ciudad si existe; si no, por km
+  const stateCityRate = rateConfig.travel.cityRates[state]?.[city];
   const rawTravelCost =
-    typeof customRate === "number"
-      ? customRate
+    typeof stateCityRate === "number"
+      ? stateCityRate
       : distanceKm * rateConfig.travel.costPerKm;
 
   const isTravelDoubled = pax >= rateConfig.travel.heavyLogisticsPaxThreshold;

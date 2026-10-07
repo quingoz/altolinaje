@@ -84,7 +84,8 @@ export interface RateConfig {
     costPerKm: number;
     heavyLogisticsPaxThreshold: number;
     heavyLogisticsMultiplier: number;
-    customCityRates: Record<string, number>;
+    /** Tarifas fijas de traslado por estado y ciudad. Si la combinación no existe, se usa `costPerKm`. */
+    cityRates: Record<string, Record<string, number>>;
   };
   lodging: {
     costPerParrillero: number;

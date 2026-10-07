@@ -230,7 +230,7 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
               <tbody>
                 <tr className="border-b border-[#e5e7eb]">
                   <td className="w-2/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
-                    Servicio de carnes
+                    Servicio
                   </td>
                   <td className="p-2 text-right font-mono">
                     {formatCurrency(props.baseCost)}

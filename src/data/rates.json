@@ -18,23 +18,77 @@
     "costPerKm": 0.90,
     "heavyLogisticsPaxThreshold": 180,
     "heavyLogisticsMultiplier": 2,
-    "customCityRates": {
-      "San Cristóbal": 0,
-      "Caracas": 0,
-      "Cúcuta": 120,
-      "Barinas": 150
+    "cityRates": {
+      "Táchira": {
+        "San Cristóbal": 50,
+        "Rubio": 60,
+        "La Grita": 150,
+        "Pregonero": 150,
+        "San Antonio del Táchira": 120
+      },
+      "Monagas": {
+        "Maturín": 500
+      },
+      "Anzoátegui": {
+        "Barcelona": 360,
+        "Puerto La Cruz": 380,
+        "El Tigre": 500
+      },
+      "Lara": {
+        "Carora": 500,
+        "Barquisimeto": 400,
+        "El Tocuyo": 460
+      },
+      "Barinas": {
+        "Barinas": 350,
+        "Santa Bárbara de Barinas": 200,
+        "Barinitas": 380
+      },
+      "Zulia": {
+        "Maracaibo": 480
+      },
+      "Guárico": {
+        "San Juan de los Morros": 200,
+        "Calabozo": 300
+      },
+      "Bolívar": {
+        "Ciudad Bolívar": 650,
+        "Puerto Ordaz": 600
+      },
+      "Miranda": {
+        "Higuerote": 180
+      },
+      "Nueva Esparta": {
+        "Margarita": 500
+      },
+      "Falcón": {
+        "Coro": 550
+      },
+      "Portuguesa": {
+        "Acarigua": 380,
+        "Araure": 380,
+        "Guanare": 440
+      },
+      "Yaracuy": {
+        "San Felipe": 340
+      }
     }
   },
   "lodging": {
     "costPerParrillero": 40,
     "paxPerParrillero": 40,
-    "citiesRequiringLodging": ["Mérida", "Trujillo", "Barinas", "Zulia", "Valencia", "Barquisimeto", "Maracaibo"]
+    "citiesRequiringLodging": [
+      "Mérida", "Trujillo", "Valencia", "Barquisimeto", "Maracaibo", "Barinas",
+      "La Grita", "Pregonero", "Maturín", "Barcelona", "Puerto La Cruz", "El Tigre",
+      "Carora", "Santa Bárbara de Barinas", "Calabozo", "Ciudad Bolívar", "Puerto Ordaz",
+      "Margarita", "Coro", "Acarigua", "Araure", "Guanare", "San Felipe", "Barinitas", "El Tocuyo"
+    ]
   },
   "menuOptions": {
     "modalities": [
       { "id": "self_service", "name": "Self-Services", "minRecipes": 2, "maxRecipes": 3, "description": "Nuestro equipo desplegara cada estacion de comida en los Chef and Dish. El servicio finaliza al momento que se agota la comida.", "image": "/images/mode-self-services.jpg" },
       { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "800grs de proteina por persona prestadas en las cajas, servidas con una diferencia de 1,2 o 3 horas. La capacidad de cada caja es de 10 personas.", "image": "/images/mode-doble-tanda.jpg" },
-      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondran de una mesa de contornos y ensaladas para servirse al gusto. Mientras los chefs pasan directamente por las mesas sirviendo una rotacion constante de cortes.", "image": "/images/mode-rodizio.jpg" }
+      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondran de una mesa de contornos y ensaladas para servirse al gusto. Mientras los chefs pasan directamente por las mesas sirviendo una rotacion constante de cortes. Servicio de 3 horas de rodizio.", "image": "/images/mode-rodizio.jpg" }
     ],
     "recipes": [
       { "id": "lomo_cerdo", "name": "Lomo de Cerdo", "description": "Con chicharron acompañado de salsa de chistorra y pimenton ahumado." },

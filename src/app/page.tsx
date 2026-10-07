@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
       <section
-        className="relative overflow-hidden bg-[#0b0c0e] px-4 pb-16 pt-24 text-center sm:pt-32 lg:pt-40"
+        className="relative overflow-hidden bg-[#0b0c0e] px-4 pb-8 pt-16 text-center sm:pt-20 sm:pb-10 lg:pt-24"
         aria-labelledby="hero-title"
       >
         <div className="mx-auto max-w-4xl">

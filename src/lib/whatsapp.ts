@@ -70,7 +70,7 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     `• Ensaladas: ${salads.join(", ") || "-"}`,
     "",
     "💰 *Desglose de Cotización:*",
-    `• Servicio de Carnes: ${formatCurrency(baseCost)}`,
+    `• Servicio: ${formatCurrency(baseCost)}`,
     `• Logística/Traslado: ${formatCurrency(travelCost)}${travelNote}`,
     `• Hospedaje${lodgingNote}: ${formatCurrency(lodgingCost)}`,
     hasOwnerAdjustment ? adjustment : "",

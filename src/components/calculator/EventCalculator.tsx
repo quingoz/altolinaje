@@ -42,26 +42,34 @@ type LucideIcon = React.ComponentType<{ className?: string }>;
 
 const VENEZUELA_LOCATIONS: Record<string, string[]> = {
   Amazonas: ["Puerto Ayacucho", "Otra"],
-  Anzoátegui: ["Barcelona", "Puerto La Cruz", "Otra"],
+  Anzoátegui: ["Barcelona", "Puerto La Cruz", "El Tigre", "Otra"],
   Apure: ["San Fernando de Apure", "Otra"],
   Aragua: ["Maracay", "Otra"],
-  Barinas: ["Barinas", "Otra"],
+  Barinas: ["Barinas", "Santa Bárbara de Barinas", "Barinitas", "Otra"],
   Bolívar: ["Ciudad Bolívar", "Puerto Ordaz", "Otra"],
   Carabobo: ["Valencia", "Otra"],
   Cojedes: ["San Carlos", "Otra"],
   "Delta Amacuro": ["Tucupita", "Otra"],
   "Distrito Capital": ["Caracas", "Otra"],
   Falcón: ["Coro", "Otra"],
-  Guárico: ["San Juan de los Morros", "Otra"],
+  Guárico: ["San Juan de los Morros", "Calabozo", "Otra"],
   "La Guaira": ["La Guaira", "Maiquetía", "Otra"],
-  Lara: ["Barquisimeto", "Otra"],
+  Lara: ["Barquisimeto", "Carora", "El Tocuyo", "Otra"],
   Mérida: ["Mérida", "El Vigía", "Otra"],
-  Miranda: ["Caracas", "Los Teques", "Otra"],
+  Miranda: ["Caracas", "Los Teques", "Higuerote", "Otra"],
   Monagas: ["Maturín", "Otra"],
-  "Nueva Esparta": ["Porlamar", "Otra"],
-  Portuguesa: ["Guanare", "Otra"],
+  "Nueva Esparta": ["Porlamar", "Margarita", "Otra"],
+  Portuguesa: ["Guanare", "Acarigua", "Araure", "Otra"],
   Sucre: ["Cumaná", "Otra"],
-  Táchira: ["San Cristóbal", "Cúcuta", "Rubio", "Otra"],
+  Táchira: [
+    "San Cristóbal",
+    "Cúcuta",
+    "Rubio",
+    "La Grita",
+    "Pregonero",
+    "San Antonio del Táchira",
+    "Otra",
+  ],
   Trujillo: ["Valera", "Trujillo", "Otra"],
   Yaracuy: ["San Felipe", "Otra"],
   Zulia: ["Maracaibo", "Otra"],
@@ -197,8 +205,6 @@ function ModalityCard({
   selected: boolean;
   onClick: () => void;
 }) {
-  const Icon = MODALITY_ICONS[modality.id] || Users;
-
   return (
     <motion.button
       type="button"
@@ -210,21 +216,21 @@ function ModalityCard({
         selected ? "border-[#fd0200]" : "border-white/10 hover:border-white/30"
       )}
     >
-      {modality.image && (
-        <div className="relative h-40 w-full overflow-hidden">
+      <div className="relative h-56 w-full overflow-hidden sm:h-64">
+        {modality.image ? (
           <Image
             src={modality.image}
             alt={modality.name}
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c0e] to-transparent" />
-        </div>
-      )}
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1f2229] to-[#0b0c0e]">
+            <Users className="h-16 w-16 text-[#fd0200]/30" />
+          </div>
+        )}
+      </div>
       <div className="p-6">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#fd0200]/10 text-[#fd0200]">
-          <Icon className="h-8 w-8" />
-        </div>
         <h3 className="text-xl font-semibold text-white">{modality.name}</h3>
         <p className="mt-2 text-sm text-white/60">{modality.description}</p>
         <p className="mt-4 text-xs font-medium text-[#fd0200]">
@@ -547,7 +553,7 @@ function FloatingBar({
               >
                 <div className="mt-4 grid grid-cols-3 gap-3 border-t border-white/10 pt-4">
                   <div>
-                    <p className="text-xs text-white/50">Carnes</p>
+                    <p className="text-xs text-white/50">Servicio</p>
                     <p className="text-sm font-semibold text-white">{formatCurrency(quote.baseCost)}</p>
                   </div>
                   <div>
@@ -576,7 +582,7 @@ function FloatingBar({
         <div className="hidden lg:flex lg:flex-row lg:items-center lg:justify-between lg:gap-4">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div>
-              <p className="text-xs text-white/50">Carnes</p>
+              <p className="text-xs text-white/50">Servicio</p>
               <p className="text-lg font-semibold text-white">{formatCurrency(quote.baseCost)}</p>
             </div>
             <div>
@@ -1127,7 +1133,7 @@ export default function EventCalculator() {
             <div className="rounded-2xl border border-white/10 bg-[#0b0c0e] p-6">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div>
-                  <p className="text-xs text-white/50">Carnes</p>
+                  <p className="text-xs text-white/50">Servicio</p>
                   <p className="text-lg font-semibold text-white">{formatCurrency(quote.baseCost)}</p>
                 </div>
                 <div>
