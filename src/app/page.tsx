@@ -13,12 +13,14 @@ export default function Home() {
             id="hero-title"
             className="text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl"
           >
-            Parrilla de alto linaje
-            <span className="block text-[#fd0200]">para eventos únicos</span>
+            Servicio de Catering Parrillero
+            <span className="block text-[#fd0200]">para eventos Privados</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">
-            Carnes ahumadas, en vara y servicio gourmet en sitio. Diseña tu
-            experiencia y recibe un estimado al instante.
+          <p className="mx-auto mt-6 max-w-3xl text-lg text-white/70">
+            Llevamos la mejor experiencia parrillera directo a tu celebración. Tú
+            solo dedícate a disfrutar con tus invitados, que del resto nos
+            encargamos nosotros. Disfruta con diferentes modalidades el servicio y
+            selecciona lo que deseas.
           </p>
           <a
             href="#cotizador"

@@ -86,9 +86,9 @@
   },
   "menuOptions": {
     "modalities": [
-      { "id": "self_service", "name": "Self-Services", "minRecipes": 2, "maxRecipes": 3, "description": "Nuestro equipo desplegara cada estacion de comida en los Chef and Dish. El servicio finaliza al momento que se agota la comida.", "image": "/images/mode-self-services.jpg" },
-      { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "800grs de proteina por persona prestadas en las cajas, servidas con una diferencia de 1,2 o 3 horas. La capacidad de cada caja es de 10 personas.", "image": "/images/mode-doble-tanda.jpg" },
-      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondran de una mesa de contornos y ensaladas para servirse al gusto. Mientras los chefs pasan directamente por las mesas sirviendo una rotacion constante de cortes. Servicio de 3 horas de rodizio.", "image": "/images/mode-rodizio.jpg" }
+      { "id": "self_service", "name": "Self-Service", "minRecipes": 2, "maxRecipes": 3, "description": "Nuestro equipo desplegara cada estacion de comida en los Chef and Dish. El servicio finaliza al momento que se agota la comida.", "image": "/images/mode-self-services.jpg" },
+      { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "800 gr de proteína por persona + 200 gr de contornos + ensaladas. Servidas en las Cajas Alto Linaje en dos oportunidades, con una diferencia de 2 a 3 horas. La capacidad de cada caja es de 8 a 10 personas.", "image": "/images/mode-doble-tanda.jpg" },
+      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondrán de una mesa de contornos y ensaladas para servirse al gusto, mientras los chefs pasan directamente por las mesas ofreciendo una rotación constante de cortes durante 3 horas de servicio de rodizio.", "image": "/images/mode-rodizio.jpg" }
     ],
     "recipes": [
       { "id": "lomo_cerdo", "name": "Lomo de Cerdo", "description": "Con chicharron acompañado de salsa de chistorra y pimenton ahumado." },
