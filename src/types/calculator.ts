@@ -10,8 +10,6 @@ export interface QuoteParams {
   state: string;
   /** Ciudad donde se realizará el evento. */
   city: string;
-  /** Distancia en kilómetros desde la sucursal hasta el evento. */
-  distanceKm: number;
   /** Identificador de la modalidad de servicio elegida (self_service, doble_tanda, rodizio). */
   modalityId: string;
   /** Identificadores de las recetas (cortes) seleccionadas. */
@@ -81,10 +79,9 @@ export interface RateConfig {
   };
   branches: Record<string, BranchConfig>;
   travel: {
-    costPerKm: number;
     heavyLogisticsPaxThreshold: number;
     heavyLogisticsMultiplier: number;
-    /** Tarifas fijas de traslado por estado y ciudad. Si la combinación no existe, se usa `costPerKm`. */
+    /** Tarifas fijas de traslado por estado y ciudad. Si la combinación no existe, queda por confirmar. */
     cityRates: Record<string, Record<string, number>>;
   };
   lodging: {

@@ -10,7 +10,6 @@ export interface OwnerPDFData {
   pax: number;
   state: string;
   city: string;
-  distanceKm: number;
   assignedBranch: string;
   modalityName: string;
   recipes: string[];
@@ -18,6 +17,7 @@ export interface OwnerPDFData {
   salads: string[];
   baseCost: number;
   travelCost: number;
+  isTravelPending: boolean;
   lodgingCost: number;
   total: number;
   ownerMargin: number;
@@ -166,12 +166,6 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                     {props.city}, {props.state}
                   </td>
                 </tr>
-                <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
-                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
-                    Distancia estimada
-                  </td>
-                  <td className="p-2">{props.distanceKm} km</td>
-                </tr>
                 <tr className="border-b border-[#e5e7eb]">
                   <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Invitados
@@ -246,7 +240,7 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                     )}
                   </td>
                   <td className="p-2 text-right font-mono">
-                    {formatCurrency(props.travelCost)}
+                    {props.isTravelPending ? "Por confirmar" : formatCurrency(props.travelCost)}
                   </td>
                 </tr>
                 <tr className="border-b border-[#e5e7eb]">
@@ -290,7 +284,7 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                 )}
                 <tr className="bg-[#000000] text-[#ffffff]">
                   <td className="w-2/3 border-r border-[#374151] p-3 font-bold uppercase">
-                    Total estimado
+                    {props.isTravelPending ? "Total parcial" : "Total estimado"}
                   </td>
                   <td className="p-3 text-right font-mono font-bold">
                     {formatCurrency(hasMargin ? adjustedTotal : props.total)} USD
@@ -310,8 +304,9 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                   Cotización sujeta a confirmación y disponibilidad de fecha.
                 </li>
                 <li>
-                  Precio de hospedaje y logística sujeto a ajustes en la
-                  negociación final.
+                  {props.isTravelPending
+                    ? "El traslado está por confirmar y no está incluido en el total parcial."
+                    : "Precio de hospedaje y logística sujeto a ajustes en la negociación final."}
                 </li>
                 <li>
                   Reserva con el 50% del total para confirmar la fecha.

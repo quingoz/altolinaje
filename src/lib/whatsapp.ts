@@ -10,6 +10,7 @@ export interface WhatsAppQuoteParams {
   salads: string[];
   baseCost: number;
   travelCost: number;
+  isTravelPending?: boolean;
   lodgingCost: number;
   total: number;
   isTravelDoubled?: boolean;
@@ -17,7 +18,7 @@ export interface WhatsAppQuoteParams {
   ownerMargin?: number;
 }
 
-const DEFAULT_PHONE = "584000000000";
+const DEFAULT_PHONE = "584147046714";
 
 export function formatCurrency(value: number) {
   return `$${value.toLocaleString("es-VE", {
@@ -38,6 +39,7 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     salads,
     baseCost,
     travelCost,
+    isTravelPending,
     lodgingCost,
     total,
     isTravelDoubled,
@@ -71,12 +73,14 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     "",
     "💰 *Desglose de Cotización:*",
     `• Servicio: ${formatCurrency(baseCost)}`,
-    `• Logística/Traslado: ${formatCurrency(travelCost)}${travelNote}`,
+    `• Logística/Traslado: ${isTravelPending ? "Por confirmar" : `${formatCurrency(travelCost)}${travelNote}`}`,
     `• Hospedaje${lodgingNote}: ${formatCurrency(lodgingCost)}`,
     hasOwnerAdjustment ? adjustment : "",
-    `• *TOTAL ESTIMADO: ${formatCurrency(total)} USD*`,
+    `• *${isTravelPending ? "TOTAL PARCIAL" : "TOTAL ESTIMADO"}: ${formatCurrency(total)} USD*`,
     "",
-    "📌 *Nota:* Cotización sujeta a confirmación y disponibilidad de fecha.",
+    isTravelPending
+      ? "📌 *Nota:* El traslado está por confirmar y no está incluido en el total parcial. Cotización sujeta a confirmación y disponibilidad de fecha."
+      : "📌 *Nota:* Cotización sujeta a confirmación y disponibilidad de fecha.",
   ].join("\n");
 }
 

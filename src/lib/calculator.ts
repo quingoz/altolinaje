@@ -14,8 +14,6 @@ export interface CalculateQuoteParams {
   state: string;
   /** Ciudad donde se realizará el evento. */
   city: string;
-  /** Distancia en kilómetros desde la sucursal asignada. */
-  distanceKm: number;
 }
 
 /** Desglose del cálculo de una cotización. */
@@ -30,6 +28,8 @@ export interface QuoteBreakdown {
   totalEstimate: number;
   /** Nombre de la sucursal asignada. */
   assignedBranch: string;
+  /** Indica si el traslado está pendiente de confirmación por no tener tarifa fija. */
+  isTravelPending: boolean;
   /** Indica si el costo de traslado se duplicó por logística pesada. */
   isTravelDoubled: boolean;
   /** Cantidad de parrilleros requeridos (0 si no aplica hospedaje). */
@@ -60,13 +60,13 @@ function getAssignedBranchName(state: string): string {
  * La lógica sigue estrictamente las tarifas definidas en `src/data/rates.json`:
  * - Costo base de carnes según el estado (regional o nacional).
  * - Asignación de sucursal según cobertura del estado.
- * - Costo de traslado: tarifa fija por ciudad o distancia * 0.90, duplicada si pax >= 180.
+ * - Costo de traslado: tarifa fija por ciudad; queda pendiente si no está configurada.
  * - Costo de hospedaje: parrilleros (1 por cada 40 invitados) en ciudades que lo requieren.
  */
 export function calculateQuote(
   params: CalculateQuoteParams
 ): QuoteBreakdown {
-  const { pax, state, city, distanceKm } = params;
+  const { pax, state, city } = params;
 
   // Costo base de carnes
   const isRegionalState = rateConfig.baseRates.regionalStates.includes(state);
@@ -78,17 +78,16 @@ export function calculateQuote(
   // Asignación de sucursal
   const assignedBranch = getAssignedBranchName(state);
 
-  // Costo de traslado: tarifa fija por estado + ciudad si existe; si no, por km
+  // Costo de traslado: tarifa fija por estado + ciudad; si no existe, queda por confirmar
   const stateCityRate = rateConfig.travel.cityRates[state]?.[city];
-  const rawTravelCost =
-    typeof stateCityRate === "number"
-      ? stateCityRate
-      : distanceKm * rateConfig.travel.costPerKm;
-
-  const isTravelDoubled = pax >= rateConfig.travel.heavyLogisticsPaxThreshold;
-  const travelCost = isTravelDoubled
-    ? rawTravelCost * rateConfig.travel.heavyLogisticsMultiplier
-    : rawTravelCost;
+  const isTravelPending = typeof stateCityRate !== "number";
+  const isTravelDoubled =
+    !isTravelPending && pax >= rateConfig.travel.heavyLogisticsPaxThreshold;
+  const travelCost = isTravelPending
+    ? 0
+    : isTravelDoubled
+      ? stateCityRate * rateConfig.travel.heavyLogisticsMultiplier
+      : stateCityRate;
 
   // Costo de hospedaje
   const requiresLodging =
@@ -107,6 +106,7 @@ export function calculateQuote(
     lodgingCost,
     totalEstimate,
     assignedBranch,
+    isTravelPending,
     isTravelDoubled,
     grillMastersCount,
     disclaimer: DEFAULT_DISCLAIMER,

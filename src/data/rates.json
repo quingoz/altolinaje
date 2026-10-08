@@ -15,7 +15,6 @@
     }
   },
   "travel": {
-    "costPerKm": 0.90,
     "heavyLogisticsPaxThreshold": 180,
     "heavyLogisticsMultiplier": 2,
     "cityRates": {

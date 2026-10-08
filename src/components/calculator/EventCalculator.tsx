@@ -15,14 +15,12 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Clock,
   FileDown,
   Flame,
   Leaf,
   Lock,
   MapPin,
   MessageCircle,
-  RefreshCcw,
   Shield,
   Unlock,
   Users,
@@ -73,12 +71,6 @@ const VENEZUELA_LOCATIONS: Record<string, string[]> = {
   Trujillo: ["Valera", "Trujillo", "Otra"],
   Yaracuy: ["San Felipe", "Otra"],
   Zulia: ["Maracaibo", "Otra"],
-};
-
-const MODALITY_ICONS: Record<string, LucideIcon> = {
-  self_service: Users,
-  doble_tanda: Clock,
-  rodizio: RefreshCcw,
 };
 
 const RECIPE_ICONS: Record<string, LucideIcon> = {
@@ -500,7 +492,9 @@ function FloatingBar({
               aria-expanded={detailsOpen}
             >
               <div>
-                <p className="text-[10px] uppercase tracking-wide text-[#fd0200]">Total</p>
+                <p className="text-[10px] uppercase tracking-wide text-[#fd0200]">
+                  {quote.isTravelPending ? "Total parcial" : "Total"}
+                </p>
                 <p className="text-lg font-bold text-white">{formatCurrency(adjustedTotal)}</p>
               </div>
               {detailsOpen ? (
@@ -559,7 +553,7 @@ function FloatingBar({
                   <div>
                     <p className="text-xs text-white/50">Traslado</p>
                     <p className="text-sm font-semibold text-white">
-                      {formatCurrency(quote.travelCost)}
+                      {quote.isTravelPending ? "Por confirmar" : formatCurrency(quote.travelCost)}
                       {quote.isTravelDoubled && (
                         <span className="ml-1 text-xs text-[#fd0200]">x2</span>
                       )}
@@ -588,7 +582,7 @@ function FloatingBar({
             <div>
               <p className="text-xs text-white/50">Traslado</p>
               <p className="text-lg font-semibold text-white">
-                {formatCurrency(quote.travelCost)}
+                {quote.isTravelPending ? "Por confirmar" : formatCurrency(quote.travelCost)}
                 {quote.isTravelDoubled && (
                   <span className="ml-1 text-xs text-[#fd0200]">x2</span>
                 )}
@@ -606,7 +600,9 @@ function FloatingBar({
               </p>
             </div>
             <div>
-              <p className="text-xs text-[#fd0200]">TOTAL</p>
+              <p className="text-xs text-[#fd0200]">
+                {quote.isTravelPending ? "TOTAL PARCIAL" : "TOTAL"}
+              </p>
               <p className="text-2xl font-bold text-white">{formatCurrency(adjustedTotal)}</p>
             </div>
           </div>
@@ -704,7 +700,6 @@ export default function EventCalculator() {
   const [pax, setPax] = useState(50);
   const [selectedState, setSelectedState] = useState("Táchira");
   const [selectedCity, setSelectedCity] = useState("San Cristóbal");
-  const [distanceKm, setDistanceKm] = useState(0);
   const [eventDate, setEventDate] = useState("");
 
   const [selectedModalityId, setSelectedModalityId] = useState<string | null>(null);
@@ -736,7 +731,7 @@ export default function EventCalculator() {
 
   const pdfRef = useRef<OwnerPDFRef>(null);
 
-  const [ownerPhone] = useState("584000000000");
+  const [ownerPhone] = useState("584147046714");
 
   const isOwner = isClient && (storedOwner || urlAdmin) && !forceLogout;
 
@@ -752,9 +747,8 @@ export default function EventCalculator() {
         pax: Math.max(0, pax),
         state: selectedState,
         city: selectedCity,
-        distanceKm: Math.max(0, distanceKm),
       }),
-    [pax, selectedState, selectedCity, distanceKm]
+    [pax, selectedState, selectedCity]
   );
 
   const adjustedTotal = useMemo(
@@ -858,6 +852,7 @@ export default function EventCalculator() {
       salads,
       baseCost: quote.baseCost,
       travelCost: quote.travelCost,
+      isTravelPending: quote.isTravelPending,
       lodgingCost: quote.lodgingCost,
       total: adjustedTotal,
       isTravelDoubled: quote.isTravelDoubled,
@@ -941,41 +936,24 @@ export default function EventCalculator() {
               </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-white/80">
-                  Distancia aproximada (km)
-                </label>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-white/80">
+                Fecha del evento
+              </label>
+              <div className="relative">
+                <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
                 <input
-                  type="number"
-                  min={0}
-                  step={10}
-                  value={distanceKm}
-                  onChange={(e) => {
-                    const next = Number(e.target.value);
-                    if (!Number.isNaN(next)) setDistanceKm(Math.max(0, next));
-                  }}
-                  className="w-full rounded-lg border border-white/10 bg-[#16181d] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
+                  type="date"
+                  value={eventDate}
+                  onChange={(e) => setEventDate(e.target.value)}
+                  className="w-full rounded-lg border border-white/10 bg-[#16181d] py-3 pl-10 pr-4 text-white outline-none transition-colors focus:border-[#fd0200]"
                 />
-                <p className="text-xs text-white/40">
-                  Usada para ciudades sin tarifa fija de traslado.
+              </div>
+              {quote.isTravelPending && (
+                <p className="text-xs text-amber-400">
+                  El costo de traslado para esta ciudad será confirmado durante la negociación.
                 </p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-white/80">
-                  Fecha del evento
-                </label>
-                <div className="relative">
-                  <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-                  <input
-                    type="date"
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-[#16181d] py-3 pl-10 pr-4 text-white outline-none transition-colors focus:border-[#fd0200]"
-                  />
-                </div>
-              </div>
+              )}
             </div>
           </section>
         );
@@ -1088,7 +1066,6 @@ export default function EventCalculator() {
               <SummaryCard title="Datos del evento" onEdit={() => setStep(1)}>
                 <SummaryRow label="Personas" value={`${pax} pax`} />
                 <SummaryRow label="Ubicación" value={`${selectedCity}, ${selectedState}`} />
-                <SummaryRow label="Distancia" value={`${distanceKm} km`} />
                 <SummaryRow label="Fecha" value={eventDate || "Sin definir"} />
               </SummaryCard>
 
@@ -1138,14 +1115,16 @@ export default function EventCalculator() {
                 </div>
                 <div>
                   <p className="text-xs text-white/50">Traslado</p>
-                  <p className="text-lg font-semibold text-white">{formatCurrency(quote.travelCost)}</p>
+                  <p className="text-lg font-semibold text-white">{quote.isTravelPending ? "Por confirmar" : formatCurrency(quote.travelCost)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-white/50">Hospedaje</p>
                   <p className="text-lg font-semibold text-white">{formatCurrency(quote.lodgingCost)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#fd0200]">TOTAL</p>
+                  <p className="text-xs text-[#fd0200]">
+                {quote.isTravelPending ? "TOTAL PARCIAL" : "TOTAL"}
+              </p>
                   <p className="text-2xl font-bold text-white">{formatCurrency(adjustedTotal)}</p>
                 </div>
               </div>
@@ -1436,7 +1415,6 @@ export default function EventCalculator() {
           pax={pax}
           state={selectedState}
           city={selectedCity}
-          distanceKm={distanceKm}
           assignedBranch={quote.assignedBranch}
           modalityName={selectedModality?.name ?? ""}
           recipes={selectedRecipeIds
@@ -1450,6 +1428,7 @@ export default function EventCalculator() {
             .filter(Boolean) as string[]}
           baseCost={quote.baseCost}
           travelCost={quote.travelCost}
+          isTravelPending={quote.isTravelPending}
           lodgingCost={quote.lodgingCost}
           total={quote.totalEstimate}
           ownerMargin={ownerMargin}
