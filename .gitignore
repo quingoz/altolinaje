@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Heavy media files uploaded manually to the server
+*.mp4
+*.heic
+*.HEIC
+*.zip
