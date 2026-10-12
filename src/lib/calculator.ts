@@ -7,6 +7,8 @@ const DEFAULT_DISCLAIMER =
   "Los precios presentados son un estimado preliminar y pueden variar según disponibilidad, temporada y requerimientos específicos del evento.";
 
 /** Parámetros mínimos necesarios para calcular una cotización. */
+export type ServiceType = "full" | "labor_only";
+
 export interface CalculateQuoteParams {
   /** Número de invitados (pax). */
   pax: number;
@@ -14,6 +16,8 @@ export interface CalculateQuoteParams {
   state: string;
   /** Ciudad donde se realizará el evento. */
   city: string;
+  /** Tipo de servicio: completo con ingredientes o solo mano de obra. */
+  serviceType?: ServiceType;
 }
 
 /** Desglose del cálculo de una cotización. */
@@ -66,13 +70,18 @@ function getAssignedBranchName(state: string): string {
 export function calculateQuote(
   params: CalculateQuoteParams
 ): QuoteBreakdown {
-  const { pax, state, city } = params;
+  const { pax, state, city, serviceType = "full" } = params;
 
-  // Costo base de carnes
+  // Costo base del servicio
   const isRegionalState = rateConfig.baseRates.regionalStates.includes(state);
-  const pricePerPerson = isRegionalState
-    ? rateConfig.baseRates.regionalPricePerPerson
-    : rateConfig.baseRates.nationalPricePerPerson;
+  const pricePerPerson =
+    serviceType === "labor_only"
+      ? isRegionalState
+        ? rateConfig.baseRates.laborOnlyRegionalPricePerPerson
+        : rateConfig.baseRates.laborOnlyNationalPricePerPerson
+      : isRegionalState
+        ? rateConfig.baseRates.regionalPricePerPerson
+        : rateConfig.baseRates.nationalPricePerPerson;
   const baseCost = pricePerPerson * pax;
 
   // Asignación de sucursal

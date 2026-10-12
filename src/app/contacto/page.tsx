@@ -15,10 +15,6 @@ export default function ContactoPage() {
           <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
             Contacto
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/70">
-            Estamos listos para diseñar tu evento. Escríbenos o visita la
-            sucursal más cercana.
-          </p>
         </div>
 
         <ContactForm />

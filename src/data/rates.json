@@ -2,6 +2,8 @@
   "baseRates": {
     "regionalPricePerPerson": 25,
     "nationalPricePerPerson": 35,
+    "laborOnlyRegionalPricePerPerson": 10,
+    "laborOnlyNationalPricePerPerson": 15,
     "regionalStates": ["Táchira", "Mérida", "Trujillo"]
   },
   "branches": {
@@ -87,31 +89,31 @@
     "modalities": [
       { "id": "self_service", "name": "Self-Service", "minRecipes": 2, "maxRecipes": 3, "description": "Nuestro equipo desplegara cada estacion de comida en los Chef and Dish. El servicio finaliza al momento que se agota la comida.", "image": "/images/mode-self-services.jpg" },
       { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "800 gr de proteína por persona + 200 gr de contornos + ensaladas. Servidas en las Cajas Alto Linaje en dos oportunidades, con una diferencia de 2 a 3 horas. La capacidad de cada caja es de 8 a 10 personas.", "image": "/images/mode-doble-tanda.jpg" },
-      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondrán de una mesa de contornos y ensaladas para servirse al gusto, mientras los chefs pasan directamente por las mesas ofreciendo una rotación constante de cortes durante 3 horas de servicio de rodizio.", "image": "/images/mode-rodizio.jpg" }
+      { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondrán de una mesa de contornos y ensaladas para servirse al gusto, mientras los chefs pasan directamente por las mesas ofreciendo una rotación constante de cortes durante 3 horas de servicio de rodizio.", "image": "/images/mode-rodizio.jpg" },
+      { "id": "plato_a_plato", "name": "Plato a Plato", "minRecipes": 2, "maxRecipes": 2, "minPax": 150, "description": "Consiste en servicio plato a plato por persona, entregado por el personal o mesoneros directo a la mesa de los comensales.", "image": "/images/mode-plato-a-plato.jpg" },
+      { "id": "pincheras", "name": "Pincheras", "minRecipes": 0, "maxRecipes": 0, "skipMenu": true, "description": "Disfruta de servicio de pinchos por un tiempo limitado de 3 horas continuas. Las proteínas y acompañamientos se definen al momento de la negociación.", "image": "/images/mode-pincheras.jpg" }
     ],
     "recipes": [
-      { "id": "lomo_cerdo", "name": "Lomo de Cerdo", "description": "Con chicharron acompañado de salsa de chistorra y pimenton ahumado." },
-      { "id": "puntas_ahumadas", "name": "Puntas Traseras Ahumadas", "description": "Acompañada de salsa blanca de queso azul.", "image": "/images/recetas/PUNTAS-TRASERAS-AHUMADAS.jpg" },
-      { "id": "costillas_bbq", "name": "Costillas de Cerdo BBQ", "description": "Ahumadas en salsa BBQ." },
-      { "id": "costillas_ajillo", "name": "Costillas de Cerdo al Ajillo", "description": "Ahumadas con toque de ajillo casero." },
-      { "id": "carne_vara", "name": "Tradicional Carne en Vara", "description": "Acompañada de guasacaca.", "image": "/images/recetas/CARNE-EN-VARA.jpg" },
-      { "id": "beef_wellington", "name": "Beef Wellington", "description": "Lomito sellado a la parrilla envuelto en masa de hojaldre con mousse de champiñones y tocineta.", "image": "/images/recetas/BEEF-WELLINTONG.jpg" },
-      { "id": "pork_belly", "name": "Pork Belly", "description": "Con salsa de whisky.", "image": "/images/recetas/PORK-BELLY.jpg" },
-      { "id": "picanha", "name": "Picanha Tradicional", "description": "Con chimichurri.", "image": "/images/recetas/PICANHA-TRADICIONAL.jpg" },
-      { "id": "churrasco_solomo", "name": "Churrasco de Solomo / Punta Grill", "description": "Con salsa de vegetales tatemados." },
-      { "id": "pollo_vara", "name": "Pollo en Vara", "description": "Con guasacaca." },
+      { "id": "lomo_cerdo", "name": "Lomo de Cerdo", "description": "Con chicharron acompañado de salsa de chistorra y pimenton ahumado.", "images": ["/images/recetas/LOMO-DE-CERDO-1.jpg", "/images/recetas/LOMO-DE-CERDO-2.jpg"] },
+      { "id": "puntas_ahumadas", "name": "Puntas Traseras Ahumadas", "description": "Acompañada de salsa blanca de queso azul.", "images": ["/images/recetas/PUNTAS-TRASERAS-AHUMADAS.jpg", "/images/recetas/PUNTAS-AHUMADAS-2.jpg"] },
+      { "id": "costillas_bbq", "name": "Costillas de Cerdo BBQ", "description": "Ahumadas en salsa BBQ.", "images": ["/images/recetas/COSTILLAS-BBQ-1.png", "/images/recetas/COSTILLAS-BBQ-2.jpg"] },
+      { "id": "carne_vara", "name": "Tradicional Carne en Vara", "description": "Acompañada de guasacaca.", "images": ["/images/recetas/CARNE-EN-VARA.jpg", "/images/recetas/CARNE-EN-VARA-2.PNG"] },
+      { "id": "beef_wellington", "name": "Beef Wellington", "description": "Lomito sellado a la parrilla envuelto en masa de hojaldre con mousse de champiñones y tocineta.", "images": ["/images/recetas/BEEF-WELLINTONG.jpg", "/images/recetas/BEEF-WELLINTONG-2.PNG"] },
+      { "id": "pork_belly", "name": "Pork Belly", "description": "Con salsa de whisky.", "images": ["/images/recetas/PORK-BELLY.jpg", "/images/recetas/PORK-BELLY-2.jpg", "/images/recetas/PORK-BELLY-3.jpg"] },
+      { "id": "picanha", "name": "Picanha Tradicional", "description": "Con chimichurri.", "images": ["/images/recetas/PICANHA-TRADICIONAL.jpg","/images/recetas/PICANHA-1.jpg", "/images/recetas/PICANHA-2.jpg"] },
+      { "id": "churrasco_solomo", "name": "Churrasco de Solomo / Punta Grill", "description": "Con salsa de vegetales tatemados.", "images": ["/images/recetas/CHURRASCO-PUNTA-1.jpg"] },
+      { "id": "pollo_vara", "name": "Pollo en Vara", "description": "Con guasacaca.","images": ["/images/recetas/POLLO-EN-VARA-1.jpg"] },
       { "id": "pechuga_grill", "name": "Churrasco o Pechuga de Pollo al Grill", "description": "Con salsa tatemada" }
     ],
     "sides": [
-      { "id": "yuca", "name": "Yuca hervida/al vapor" },
-      { "id": "papitas", "name": "Papitas amarillas colombianas" },
-      { "id": "mazorcas", "name": "Mazorcas a la parrilla" }
+      { "id": "yuca", "name": "Yuca cocida", "images": ["/images/recetas/YUCA-1.jpg"]},
+      { "id": "papitas", "name": "Papitas amarillas colombianas","images":["/images/recetas/PAPAS-AMARILLAS.PNG"]},
+      { "id": "mazorcas", "name": "Mazorcas a la parrilla","images":["/images/recetas/MAZORCAS-1.PNG"]}
     ],
     "salads": [
-      { "id": "pimentones", "name": "Pimentones ahumados rellenos" },
-      { "id": "capressa", "name": "Ensalada Capressa tradicional" },
-      { "id": "mixta", "name": "Ensalada Mixta" },
-      { "id": "cesar", "name": "Ensalada César" }
+      { "id": "pimentones", "name": "Pimentones ahumados rellenos", "description": "Pimentones ahumados y rellenos de queso mozarella con topping de chorizo ahumado"},
+      { "id": "capressa", "name": "Ensalada Capressa tradicional", "description": "Rodajas de tomate con queso mozarella y topping de pesto de albahaca", "images": ["/images/recetas/ENSALADA-CAPRESSA-1.JPG"]},
+      { "id": "cesar", "name": "Ensalada César", "description": "A base de lechuga romana, picatostes (croûtons) y queso parmesano, acompañado de un aderezo cremoso elaborado tradicionalmente con aceite de oliva, huevo, jugo de limón, ajo, salsa Worcestershire (salsa inglesa) y anchoas", "images":["/images/recetas/CESAR-1.jpg"] }
     ]
   }
 }

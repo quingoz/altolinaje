@@ -23,12 +23,12 @@ const FAQS = [
   {
     question: "¿Pueden atender eventos fuera de Venezuela?",
     answer:
-      "Trabajamos principalmente en Venezuela, con sucursales en San Cristóbal (Andina/Occidente) y Caracas (Centro). Eventos en ciudades especiales se evalúan caso por caso.",
+      "Trabajamos principalmente en Venezuela. Eventos en ciudades extranjeras se cotizan a través de WhatsApp.",
   },
   {
     question: "¿Qué métodos de pago aceptan?",
     answer:
-      "Aceptamos transferencia bancaria, pago móvil (donde aplique) y efectivo. El 50% del total suele solicitarse como reserva para confirmar la fecha.",
+      "Aceptamos Zelle, Binance, efectivo y Bs. La totalidad del pago del evento debe realizarse máximo 5 días antes.",
   },
   {
     question: "¿Cuánto tiempo antes debo reservar?",

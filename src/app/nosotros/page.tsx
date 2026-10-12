@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import PlaceholderImage from "@/components/ui/PlaceholderImage";
-import { Flame, Award, Users } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Nosotros",
@@ -8,21 +6,18 @@ export const metadata: Metadata = {
     "Conoce la historia de Alto Linaje, nuestra pasión por las carnes ahumadas y en vara, y el concepto de exclusividad que define cada evento.",
 };
 
-const HIGHLIGHTS = [
+const VIDEOS = [
   {
-    icon: Flame,
-    title: "Fuego y tradición",
-    text: "Rescatamos técnicas ancestrales de ahumado y cocción lenta a la leña para entregar cortes con sabor inconfundible.",
+    title: "Evento en Caracas",
+    src: "/images/nosotros/catering-1.mp4",
   },
   {
-    icon: Award,
-    title: "Exclusividad",
-    text: "Cada evento es una edición limitada. Seleccionamos recetas, contornos y ensaladas según la ocasión y el gusto del cliente.",
+    title: "Evento en Acarigua",
+    src: "/images/nosotros/catering-2.mp4",
   },
   {
-    icon: Users,
-    title: "Parrilleros en sitio",
-    text: "Llevamos el equipo, la experiencia y el servicio a donde lo necesites, con parrilleros capacitados para atender a tus invitados.",
+    title: "Evento en San Cristobal",
+    src: "/images/nosotros/catering-3.mp4",
   },
 ];
 
@@ -41,9 +36,10 @@ export default function NosotrosPage() {
         </div>
 
         <div className="mt-16 grid gap-12 lg:grid-cols-2 lg:items-center">
-          <PlaceholderImage
+          <img
+            src="/images/nosotros/nosotros-1.jpg"
             alt="Equipo de Alto Linaje en un evento al aire libre"
-            className="aspect-[4/3] w-full"
+            className="w-full rounded-2xl"
           />
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold text-white">
@@ -62,30 +58,31 @@ export default function NosotrosPage() {
           </div>
         </div>
 
-        <div className="mt-24 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {HIGHLIGHTS.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-2xl border border-white/10 bg-[#16181d] p-6"
-            >
-              <item.icon className="h-8 w-8 text-[#fd0200]" />
-              <h3 className="mt-4 text-lg font-semibold text-white">
-                {item.title}
-              </h3>
-              <p className="mt-2 text-sm text-white/60">{item.text}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-24 rounded-3xl border border-white/10 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] p-8 text-center sm:p-12">
-          <h2 className="text-2xl font-semibold text-white">
-            Exclusividad en cada evento
+        <div className="mt-24">
+          <h2 className="text-center text-3xl font-semibold text-white sm:text-4xl">
+            Un vistazo a la experiencia, el fuego y los eventos que hacemos realidad.
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-white/70">
-            No hacemos menús genéricos. Diseñamos la propuesta gastronómica de
-            tu evento según el número de invitados, la ubicación, la temporada y
-            lo que quieras celebrar.
-          </p>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {VIDEOS.map((video) => (
+              <div
+                key={video.src}
+                className="overflow-hidden rounded-2xl border border-white/10 bg-[#16181d]"
+              >
+                <video
+                  controls
+                  preload="metadata"
+                  className="w-full"
+                >
+                  <source src={video.src} type="video/mp4" />
+                  Tu navegador no soporta la reproducción de video.
+                </video>
+                <div className="p-4">
+                  <h3 className="font-semibold text-white">{video.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

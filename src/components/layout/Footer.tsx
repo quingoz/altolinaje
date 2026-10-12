@@ -6,11 +6,11 @@ import { Camera, MapPin } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
-  { href: "/nosotros", label: "Nosotros" },
   { href: "/comidas", label: "Menú" },
   { href: "/eventos", label: "Catering" },
   { href: "/faqs", label: "Preguntas" },
   { href: "/contacto", label: "Contacto" },
+  { href: "/nosotros", label: "Nosotros" },
 ];
 
 const BRANCHES = [

@@ -1,9 +1,12 @@
+export type ServiceType = "full" | "labor_only";
+
 export interface WhatsAppQuoteParams {
   phone?: string;
   eventDate: string;
   city: string;
   state: string;
   pax: number;
+  serviceType?: ServiceType;
   modality: string;
   recipes: string[];
   sides: string[];
@@ -33,6 +36,7 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     city,
     state,
     pax,
+    serviceType,
     modality,
     recipes,
     sides,
@@ -57,21 +61,22 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     (grillMastersCount ?? 0) > 0 ? ` (${grillMastersCount} parrilleros)` : "";
 
   return [
-    "🥩 *COTIZACIÓN DE EVENTO - ALTO LINAJE*",
+    "*COTIZACIÓN DE EVENTO - ALTO LINAJE*",
     "---------------------------------------",
     "",
-    "👤 *Datos del Evento:*",
+    "*Datos del Evento:*",
     `• Fecha: ${eventDate || "Por definir"}`,
     `• Ubicación: ${city}, ${state}`,
     `• Invitados: ${pax} personas`,
+    `• Tipo de servicio: ${serviceType === "labor_only" ? "Solo mano de obra" : "Servicio completo"}`,
     "",
-    "🍽️ *Menú Seleccionado:*",
+    "*Menú Seleccionado:*",
     `• Modalidad: ${modality || "-"}`,
     `• Recetas: ${recipes.join(", ") || "-"}`,
     `• Contornos: ${sides.join(", ") || "-"}`,
     `• Ensaladas: ${salads.join(", ") || "-"}`,
     "",
-    "💰 *Desglose de Cotización:*",
+    "*Desglose de Cotización:*",
     `• Servicio: ${formatCurrency(baseCost)}`,
     `• Logística/Traslado: ${isTravelPending ? "Por confirmar" : `${formatCurrency(travelCost)}${travelNote}`}`,
     `• Hospedaje${lodgingNote}: ${formatCurrency(lodgingCost)}`,
@@ -79,8 +84,8 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     `• *${isTravelPending ? "TOTAL PARCIAL" : "TOTAL ESTIMADO"}: ${formatCurrency(total)} USD*`,
     "",
     isTravelPending
-      ? "📌 *Nota:* El traslado está por confirmar y no está incluido en el total parcial. Cotización sujeta a confirmación y disponibilidad de fecha."
-      : "📌 *Nota:* Cotización sujeta a confirmación y disponibilidad de fecha.",
+      ? "*Nota:* El traslado está por confirmar y no está incluido en el total parcial. Cotización sujeta a confirmación y disponibilidad de fecha."
+      : "*Nota:* Cotización sujeta a confirmación y disponibilidad de fecha.",
   ].join("\n");
 }
 

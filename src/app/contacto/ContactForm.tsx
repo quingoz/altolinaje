@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Camera, Phone, Mail } from "lucide-react";
+import { MapPin, Camera, Phone, Mail, MessageCircle } from "lucide-react";
 
 function cn(...classes: (string | false | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -10,11 +10,11 @@ function cn(...classes: (string | false | undefined)[]) {
 const BRANCHES = [
   {
     name: "Sucursal San Cristóbal",
-    region: "Región Andina - Táchira, Mérida, Trujillo, Barinas, Zulia",
+    region: "Táchira, Mérida, Trujillo, Barinas, Zulia",
   },
   {
     name: "Sucursal Caracas",
-    region: "Región Central - Resto del país",
+    region: "Resto del país (Centro, Llano y Oriente)",
   },
 ];
 
@@ -41,7 +41,7 @@ export default function ContactForm() {
       >
         <h2 className="text-xl font-semibold text-white">Escríbenos</h2>
         <p className="mt-2 text-sm text-white/60">
-          Completa el formulario y te contactaremos lo antes posible.
+          Completa el formulario. El mensaje llegará directamente a nuestro correo.
         </p>
 
         <div className="mt-6 space-y-4">
@@ -109,7 +109,45 @@ export default function ContactForm() {
 
       <div className="space-y-8">
         <div className="rounded-3xl border border-white/10 bg-[#16181d] p-6 sm:p-8">
-          <h2 className="text-xl font-semibold text-white">Sucursales</h2>
+          <h2 className="text-xl font-semibold text-white">Contacto directo</h2>
+          <ul className="mt-6 space-y-4">
+            <li className="flex items-center gap-3 text-white/70">
+              <Phone className="h-5 w-5 text-[#fd0200]" />
+              <span>+58 414-7046714</span>
+            </li>
+            <li className="flex items-center gap-3 text-white/70">
+              <Mail className="h-5 w-5 text-[#fd0200]" />
+              <span>altolinajeve@gmail.com</span>
+            </li>
+            <li>
+              <a
+                href="https://instagram.com/altolinajeve"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-white/70 transition-colors hover:text-[#fd0200]"
+              >
+                <Camera className="h-5 w-5 text-[#fd0200]" />
+                <span>@altolinajeve</span>
+              </a>
+            </li>
+          </ul>
+
+          <a
+            href="https://wa.me/584147046714"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[#fd0200] py-3 font-semibold text-white transition-colors hover:bg-red-600"
+          >
+            <MessageCircle className="h-5 w-5" />
+            Ir a WhatsApp
+          </a>
+        </div>
+
+        <div className="rounded-3xl border border-white/10 bg-[#16181d] p-6 sm:p-8">
+          <h2 className="text-xl font-semibold text-white">Cobertura</h2>
+          <p className="mt-2 text-sm text-white/60">
+            Atendemos eventos en las siguientes zonas. No contamos con local físico; todo se coordina a distancia.
+          </p>
           <ul className="mt-6 space-y-6">
             {BRANCHES.map((branch) => (
               <li
@@ -125,31 +163,6 @@ export default function ContactForm() {
                 </span>
               </li>
             ))}
-          </ul>
-        </div>
-
-        <div className="rounded-3xl border border-white/10 bg-[#16181d] p-6 sm:p-8">
-          <h2 className="text-xl font-semibold text-white">Contacto directo</h2>
-          <ul className="mt-6 space-y-4">
-            <li className="flex items-center gap-3 text-white/70">
-              <Phone className="h-5 w-5 text-[#fd0200]" />
-              <span>+58 424 000 0000</span>
-            </li>
-            <li className="flex items-center gap-3 text-white/70">
-              <Mail className="h-5 w-5 text-[#fd0200]" />
-              <span>hola@altolinaje.com</span>
-            </li>
-            <li>
-              <a
-                href="https://instagram.com/altolinaje"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-white/70 transition-colors hover:text-[#fd0200]"
-              >
-                <Camera className="h-5 w-5 text-[#fd0200]" />
-                <span>@altolinaje</span>
-              </a>
-            </li>
           </ul>
         </div>
       </div>

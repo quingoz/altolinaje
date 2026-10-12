@@ -28,7 +28,7 @@ import {
   ZoomIn,
 } from "lucide-react";
 
-import { calculateQuote, type QuoteBreakdown } from "@/lib/calculator";
+import { calculateQuote, type QuoteBreakdown, type ServiceType } from "@/lib/calculator";
 import { sendQuoteToWhatsApp } from "@/lib/whatsapp";
 import rateConfigData from "@/data/rates.json";
 import type { MenuModality, MenuOption, RateConfig } from "@/types/calculator";
@@ -112,6 +112,22 @@ function formatCurrency(value: number) {
   })}`;
 }
 
+function formatEventDate(value: string) {
+  if (!value) return "";
+  const parts = value.split("/");
+  if (parts.length !== 3) return value;
+  const [day, month, year] = parts;
+  if (!day || !month || !year) return value;
+  return `${day} - ${month} - ${year}`;
+}
+
+function parseEventDateToISO(value: string) {
+  if (!value) return "";
+  const [day, month, year] = value.split("/");
+  if (!day || !month || !year || year.length !== 4) return "";
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+}
+
 /* ---------- Sub-componentes ---------- */
 
 function NumberSlider({
@@ -188,33 +204,141 @@ function StepIndicator({ currentStep, total = 5 }: { currentStep: number; total?
   );
 }
 
+function ImageCarousel({
+  images,
+  name,
+  recipeId,
+}: {
+  images: string[];
+  name: string;
+  recipeId: string;
+}) {
+  const [index, setIndex] = useState(0);
+  const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
+  const Icon = RECIPE_ICONS[recipeId] || ChefHat;
+
+  const validImages = images.filter((_, i) => !imgErrors[i]);
+
+  useEffect(() => {
+    if (validImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % validImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [validImages.length]);
+
+  const currentIndex = Math.min(index, Math.max(0, validImages.length - 1));
+  const prev = () =>
+    setIndex((i) => (i - 1 + validImages.length) % validImages.length);
+  const next = () =>
+    setIndex((i) => (i + 1) % validImages.length);
+
+  const handleImageError = (originalIndex: number) => {
+    setImgErrors((prev) => ({ ...prev, [originalIndex]: true }));
+  };
+
+  return (
+    <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-[#1f2229] to-[#0b0c0e]">
+      {validImages.length > 0 ? (
+        <>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0"
+            >
+              <Image
+                src={validImages[currentIndex]}
+                alt={`${name} - ${currentIndex + 1}`}
+                fill
+                className="object-cover"
+                onError={() => handleImageError(currentIndex)}
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          {validImages.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={prev}
+                className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm transition-colors hover:text-[#fd0200]"
+                aria-label="Imagen anterior"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={next}
+                className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm transition-colors hover:text-[#fd0200]"
+                aria-label="Imagen siguiente"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+
+              <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
+                {validImages.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setIndex(i)}
+                    className={cn(
+                      "h-1.5 rounded-full transition-colors",
+                      i === currentIndex ? "w-4 bg-[#fd0200]" : "w-1.5 bg-white/50"
+                    )}
+                    aria-label={`Ver imagen ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </>
+      ) : (
+        <Icon className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 text-[#fd0200]/50" />
+      )}
+    </div>
+  );
+}
+
 function ModalityCard({
   modality,
   selected,
+  disabled,
   onClick,
 }: {
   modality: MenuModality;
   selected: boolean;
+  disabled?: boolean;
   onClick: () => void;
 }) {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <motion.button
       type="button"
       onClick={onClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      disabled={disabled}
+      whileHover={disabled ? undefined : { scale: 1.02 }}
+      whileTap={disabled ? undefined : { scale: 0.98 }}
       className={cn(
-        "relative w-full overflow-hidden rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] text-left transition-colors",
-        selected ? "border-[#fd0200]" : "border-white/10 hover:border-white/30"
+        "relative flex w-full flex-col overflow-hidden rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] text-left transition-colors",
+        selected ? "border-[#fd0200]" : "border-white/10",
+        disabled
+          ? "cursor-not-allowed opacity-50"
+          : "hover:border-white/30"
       )}
     >
       <div className="relative h-56 w-full overflow-hidden sm:h-64">
-        {modality.image ? (
+        {modality.image && !imgError ? (
           <Image
             src={modality.image}
             alt={modality.name}
             fill
             className="object-cover"
+            onError={() => setImgError(true)}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1f2229] to-[#0b0c0e]">
@@ -222,14 +346,23 @@ function ModalityCard({
           </div>
         )}
       </div>
-      <div className="p-6">
+      <div className="flex flex-1 flex-col p-6">
         <h3 className="text-xl font-semibold text-white">{modality.name}</h3>
-        <p className="mt-2 text-sm text-white/60">{modality.description}</p>
+        <p className="mt-2 flex-1 text-sm text-white/60">{modality.description}</p>
         <p className="mt-4 text-xs font-medium text-[#fd0200]">
-          Requiere{" "}
-          {modality.minRecipes === modality.maxRecipes
-            ? `${modality.minRecipes} recetas`
-            : `de ${modality.minRecipes} a ${modality.maxRecipes} recetas`}
+          {typeof modality.minPax === "number" && (
+            <span className="block">Mínimo {modality.minPax} personas</span>
+          )}
+          {disabled ? (
+            <span>Requiere mínimo {modality.minPax} personas</span>
+          ) : (
+            <>
+              Requiere{" "}
+              {modality.minRecipes === modality.maxRecipes
+                ? `${modality.minRecipes} recetas`
+                : `de ${modality.minRecipes} a ${modality.maxRecipes} recetas`}
+            </>
+          )}
         </p>
       </div>
     </motion.button>
@@ -250,6 +383,8 @@ function RecipeCard({
   onView: () => void;
 }) {
   const Icon = RECIPE_ICONS[recipe.id] || ChefHat;
+  const [imgError, setImgError] = useState(false);
+  const firstImage = recipe.images?.[0];
 
   return (
     <motion.div
@@ -261,12 +396,13 @@ function RecipeCard({
       )}
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-[#1f2229] to-[#0b0c0e]">
-        {recipe.image ? (
+        {firstImage && !imgError ? (
           <Image
-            src={recipe.image}
+            src={firstImage}
             alt={recipe.name}
             fill
             className="object-cover"
+            onError={() => setImgError(true)}
           />
         ) : (
           <Icon className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 text-[#fd0200]/50" />
@@ -320,6 +456,9 @@ function OptionCard({
   onClick: () => void;
   icon: LucideIcon;
 }) {
+  const [imgError, setImgError] = useState(false);
+  const firstImage = option.images?.[0];
+
   return (
     <motion.button
       type="button"
@@ -328,18 +467,45 @@ function OptionCard({
       whileHover={disabled && !selected ? undefined : { scale: 1.02 }}
       whileTap={disabled && !selected ? undefined : { scale: 0.98 }}
       className={cn(
-        "relative flex items-center gap-4 rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] p-4 text-left transition-colors",
+        "relative overflow-hidden rounded-2xl border-2 bg-gradient-to-br from-[#16181d] to-[#0b0c0e] text-left transition-colors",
         selected ? "border-[#fd0200]" : "border-white/10 hover:border-white/30",
         disabled && !selected && "cursor-not-allowed opacity-40 hover:border-white/10"
       )}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#fd0200]/10 text-[#fd0200]">
-        <Icon className="h-6 w-6" />
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-[#1f2229] to-[#0b0c0e]">
+        {firstImage && !imgError ? (
+          <Image
+            src={firstImage}
+            alt={option.name}
+            fill
+            className="object-cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <Icon className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 text-[#fd0200]/30" />
+        )}
       </div>
-      <div className="flex-1">
+      <div className="p-4">
         <h4 className="font-semibold text-white">{option.name}</h4>
+        {option.description && (
+          <p className="mt-1 line-clamp-2 text-sm text-white/60">
+            {option.description}
+          </p>
+        )}
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <span
+            className={cn(
+              "rounded-lg px-3 py-1.5 text-xs font-medium",
+              selected
+                ? "bg-[#fd0200] text-white"
+                : "border border-white/10 text-white/50"
+            )}
+          >
+            {selected ? "Seleccionado" : "Seleccionar"}
+          </span>
+          {selected && <Check className="h-5 w-5 text-[#fd0200]" />}
+        </div>
       </div>
-      {selected && <Check className="h-5 w-5 text-[#fd0200]" />}
     </motion.button>
   );
 }
@@ -461,16 +627,18 @@ function FloatingBar({
         </div>
       )}
 
-      <p className="max-w-sm text-right text-xs text-white/40">
-        Nota: El precio de hospedaje y logística está sujeto a ajustes en la
-        negociación final.
-        {isOwner && ownerMargin !== 0 && (
-          <span className="ml-1 text-[#fd0200]">
-            Ajuste aplicado: {ownerMargin > 0 ? "+" : ""}
-            {ownerMargin}%.
-          </span>
-        )}
-      </p>
+      <div className="max-w-sm rounded-lg border border-[#fd0200]/30 bg-[#fd0200]/10 p-3 text-right">
+        <p className="text-xs font-medium text-[#fd0200]">
+          Nota: El precio de hospedaje y logística está sujeto a ajustes en la
+          negociación final.
+          {isOwner && ownerMargin !== 0 && (
+            <span className="ml-1">
+              Ajuste aplicado: {ownerMargin > 0 ? "+" : ""}
+              {ownerMargin}%.
+            </span>
+          )}
+        </p>
+      </div>
     </>
   );
 
@@ -479,7 +647,7 @@ function FloatingBar({
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2, duration: 0.4 }}
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0b0c0e]/95 backdrop-blur-md"
+      className="sticky bottom-0 z-50 border-t border-white/10 bg-[#0b0c0e]/95 backdrop-blur-md"
     >
       <div className="mx-auto max-w-6xl px-4 py-3 lg:py-4">
         {/* Compact mobile bar */}
@@ -498,9 +666,9 @@ function FloatingBar({
                 <p className="text-lg font-bold text-white">{formatCurrency(adjustedTotal)}</p>
               </div>
               {detailsOpen ? (
-                <ChevronDown className="h-4 w-4 text-white/50" />
+                <ChevronDown className="h-5 w-5 text-[#fd0200]" />
               ) : (
-                <ChevronUp className="h-4 w-4 text-white/50" />
+                <ChevronUp className="h-5 w-5 text-[#fd0200]" />
               )}
             </button>
 
@@ -700,6 +868,7 @@ export default function EventCalculator() {
   const [pax, setPax] = useState(50);
   const [selectedState, setSelectedState] = useState("Táchira");
   const [selectedCity, setSelectedCity] = useState("San Cristóbal");
+  const [serviceType, setServiceType] = useState<ServiceType>("full");
   const [eventDate, setEventDate] = useState("");
 
   const [selectedModalityId, setSelectedModalityId] = useState<string | null>(null);
@@ -747,8 +916,9 @@ export default function EventCalculator() {
         pax: Math.max(0, pax),
         state: selectedState,
         city: selectedCity,
+        serviceType,
       }),
-    [pax, selectedState, selectedCity]
+    [pax, selectedState, selectedCity, serviceType]
   );
 
   const adjustedTotal = useMemo(
@@ -761,32 +931,62 @@ export default function EventCalculator() {
     [selectedModalityId]
   );
 
+  const modalityAllowed = useMemo(() => {
+    if (!selectedModality) return true;
+    if (typeof selectedModality.minPax === "number") {
+      return pax >= selectedModality.minPax;
+    }
+    return true;
+  }, [selectedModality, pax]);
+
   const recipeCount = selectedRecipeIds.length;
+  const skipMenuSelection = selectedModality?.skipMenu ?? false;
+
   const recipeValid = selectedModality
-    ? recipeCount >= selectedModality.minRecipes &&
-      recipeCount <= selectedModality.maxRecipes
+    ? skipMenuSelection ||
+      (recipeCount >= selectedModality.minRecipes &&
+        recipeCount <= selectedModality.maxRecipes)
     : false;
 
-  const sidesValid = selectedSideIds.length >= 1 && selectedSideIds.length <= MAX_SIDES;
-  const saladsValid = selectedSaladIds.length <= MAX_SALADS;
-  const step1Valid = pax >= 1 && selectedState.length > 0 && selectedCity.length > 0 && eventDate.length > 0;
+  const sidesValid = skipMenuSelection || (selectedSideIds.length >= 1 && selectedSideIds.length <= MAX_SIDES);
+  const saladsValid = skipMenuSelection || selectedSaladIds.length <= MAX_SALADS;
+  const isoEventDate = parseEventDateToISO(eventDate);
+  const step1Valid = pax >= 1 && selectedState.length > 0 && selectedCity.length > 0 && eventDate.length === 10;
 
   const canGoNext = () => {
     if (step === 1) return step1Valid;
-    if (step === 2) return !!selectedModality;
-    if (step === 3) return recipeValid;
-    if (step === 4) return sidesValid;
+    if (step === 2) return !!selectedModality && modalityAllowed;
+    if (step === 3) return skipMenuSelection || (recipeValid && modalityAllowed);
+    if (step === 4) return skipMenuSelection || sidesValid;
+    if (step === 5) return skipMenuSelection || saladsValid;
     return true;
   };
 
   const allValid =
-    step1Valid && !!selectedModality && recipeValid && sidesValid;
+    step1Valid && !!selectedModality && modalityAllowed && recipeValid && sidesValid;
 
   const handleStateChange = (newState: string) => {
     setSelectedState(newState);
     const cities = VENEZUELA_LOCATIONS[newState] || ["Otra"];
     setSelectedCity(cities[0]);
+    if (
+      selectedModality &&
+      typeof selectedModality.minPax === "number" &&
+      pax < selectedModality.minPax
+    ) {
+      setSelectedModalityId(null);
+    }
   };
+
+  useEffect(() => {
+    if (
+      selectedModality &&
+      typeof selectedModality.minPax === "number" &&
+      pax < selectedModality.minPax
+    ) {
+      setSelectedModalityId(null);
+    }
+  }, [pax, selectedModality]);
 
   const scrollToNextButton = () => {
     requestAnimationFrame(() => {
@@ -842,14 +1042,15 @@ export default function EventCalculator() {
 
     sendQuoteToWhatsApp({
       phone: ownerPhone,
-      eventDate,
+      eventDate: isoEventDate,
       city: selectedCity,
       state: selectedState,
       pax,
+      serviceType,
       modality: selectedModality.name,
-      recipes,
-      sides,
-      salads,
+      recipes: skipMenuSelection ? ["A definir en negociación"] : recipes,
+      sides: skipMenuSelection ? ["A definir en negociación"] : sides,
+      salads: skipMenuSelection ? ["A definir en negociación"] : salads,
       baseCost: quote.baseCost,
       travelCost: quote.travelCost,
       isTravelPending: quote.isTravelPending,
@@ -885,14 +1086,44 @@ export default function EventCalculator() {
       case 1:
         return (
           <section className="space-y-8" key="step-1">
-            <NumberSlider
-              label="Cantidad de personas"
-              value={pax}
-              min={10}
-              max={400}
-              step={5}
-              onChange={setPax}
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-white/80">
+                Cantidad de personas
+              </label>
+              <input
+                type="number"
+                min={1}
+                value={pax}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const next = raw === "" ? 0 : Number(raw);
+                  if (!Number.isNaN(next)) setPax(next);
+                }}
+                onBlur={() => {
+                  if (pax < 1) setPax(1);
+                }}
+                className="w-full rounded-lg border border-white/10 bg-[#16181d] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
+              />
+              {pax < 1 && (
+                <p className="text-xs text-[#fd0200]">
+                  La cantidad mínima es 1 persona.
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-white/80">
+                Tipo de servicio
+              </label>
+              <select
+                value={serviceType}
+                onChange={(e) => setServiceType(e.target.value as ServiceType)}
+                className="w-full appearance-none rounded-lg border border-white/10 bg-[#16181d] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
+              >
+                <option value="full">Servicio completo (con ingredientes)</option>
+                <option value="labor_only">Solo mano de obra (sin ingredientes)</option>
+              </select>
+            </div>
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
@@ -943,9 +1174,19 @@ export default function EventCalculator() {
               <div className="relative">
                 <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
                 <input
-                  type="date"
+                  type="text"
+                  inputMode="numeric"
                   value={eventDate}
-                  onChange={(e) => setEventDate(e.target.value)}
+                  placeholder="--/--/----"
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/\D/g, "");
+                    let formatted = "";
+                    if (raw.length >= 1) formatted += raw.slice(0, 2);
+                    if (raw.length >= 3) formatted += "/" + raw.slice(2, 4);
+                    if (raw.length >= 5) formatted += "/" + raw.slice(4, 8);
+                    setEventDate(formatted);
+                  }}
+                  maxLength={10}
                   className="w-full rounded-lg border border-white/10 bg-[#16181d] py-3 pl-10 pr-4 text-white outline-none transition-colors focus:border-[#fd0200]"
                 />
               </div>
@@ -961,14 +1202,19 @@ export default function EventCalculator() {
       case 2:
         return (
           <section className="grid gap-6 md:grid-cols-3" key="step-2">
-            {rateConfig.menuOptions.modalities.map((modality) => (
-              <ModalityCard
-                key={modality.id}
-                modality={modality}
-                selected={selectedModalityId === modality.id}
-                onClick={() => setSelectedModalityId(modality.id)}
-              />
-            ))}
+            {rateConfig.menuOptions.modalities.map((modality) => {
+              const disabled =
+                typeof modality.minPax === "number" && pax < modality.minPax;
+              return (
+                <ModalityCard
+                  key={modality.id}
+                  modality={modality}
+                  selected={selectedModalityId === modality.id}
+                  disabled={disabled}
+                  onClick={() => !disabled && setSelectedModalityId(modality.id)}
+                />
+              );
+            })}
           </section>
         );
 
@@ -983,7 +1229,11 @@ export default function EventCalculator() {
                       selectedModality.minRecipes === selectedModality.maxRecipes
                         ? selectedModality.minRecipes
                         : `de ${selectedModality.minRecipes} a ${selectedModality.maxRecipes}`
-                    } recetas para la modalidad ${selectedModality.name}.`}
+                    } recetas para la modalidad ${selectedModality.name}.${
+                      selectedModality.id === "self_service"
+                        ? " (Se recomiendan 3 recetas)"
+                        : ""
+                    }`}
               </ValidationBanner>
             )}
 
@@ -1005,6 +1255,15 @@ export default function EventCalculator() {
         );
 
       case 4:
+        if (skipMenuSelection) {
+          return (
+            <section className="space-y-6" key="step-4">
+              <ValidationBanner valid>
+                Has seleccionado la modalidad {selectedModality?.name}. Las proteínas y acompañamientos se cuadran al momento de la negociación.
+              </ValidationBanner>
+            </section>
+          );
+        }
         return (
           <section className="space-y-6" key="step-4">
             <ValidationBanner valid={sidesValid}>
@@ -1029,6 +1288,15 @@ export default function EventCalculator() {
         );
 
       case 5:
+        if (skipMenuSelection) {
+          return (
+            <section className="space-y-6" key="step-5">
+              <ValidationBanner valid>
+                Has seleccionado la modalidad {selectedModality?.name}. Las proteínas y acompañamientos se cuadran al momento de la negociación.
+              </ValidationBanner>
+            </section>
+          );
+        }
         return (
           <section className="space-y-6" key="step-5">
             <ValidationBanner valid={saladsValid}>
@@ -1066,7 +1334,11 @@ export default function EventCalculator() {
               <SummaryCard title="Datos del evento" onEdit={() => setStep(1)}>
                 <SummaryRow label="Personas" value={`${pax} pax`} />
                 <SummaryRow label="Ubicación" value={`${selectedCity}, ${selectedState}`} />
-                <SummaryRow label="Fecha" value={eventDate || "Sin definir"} />
+                <SummaryRow
+                  label="Servicio"
+                  value={serviceType === "labor_only" ? "Solo mano de obra" : "Servicio completo"}
+                />
+                <SummaryRow label="Fecha" value={formatEventDate(eventDate) || "Sin definir"} />
               </SummaryCard>
 
               <SummaryCard title="Modalidad" onEdit={() => setStep(2)}>
@@ -1082,29 +1354,33 @@ export default function EventCalculator() {
                 )}
               </SummaryCard>
 
-              <SummaryCard title="Recetas" onEdit={() => setStep(3)}>
-                {menuNames.recipes.length > 0 ? (
-                  <ul className="space-y-1 text-sm text-white/70">
-                    {menuNames.recipes.map((name) => (
-                      <li key={name}>• {name}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-white/40">Sin recetas seleccionadas.</p>
-                )}
-              </SummaryCard>
+              {!skipMenuSelection && (
+                <SummaryCard title="Recetas" onEdit={() => setStep(3)}>
+                  {menuNames.recipes.length > 0 ? (
+                    <ul className="space-y-1 text-sm text-white/70">
+                      {menuNames.recipes.map((name) => (
+                        <li key={name}>• {name}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-white/40">Sin recetas seleccionadas.</p>
+                  )}
+                </SummaryCard>
+              )}
 
-              <SummaryCard title="Contornos y ensaladas" onEdit={() => setStep(4)}>
-                {menuNames.sides.length > 0 || menuNames.salads.length > 0 ? (
-                  <ul className="space-y-1 text-sm text-white/70">
-                    {[...menuNames.sides, ...menuNames.salads].map((name) => (
-                      <li key={name}>• {name}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-white/40">Sin contornos ni ensaladas seleccionados.</p>
-                )}
-              </SummaryCard>
+              {!skipMenuSelection && (
+                <SummaryCard title="Contornos y ensaladas" onEdit={() => setStep(4)}>
+                  {menuNames.sides.length > 0 || menuNames.salads.length > 0 ? (
+                    <ul className="space-y-1 text-sm text-white/70">
+                      {[...menuNames.sides, ...menuNames.salads].map((name) => (
+                        <li key={name}>• {name}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-white/40">Sin contornos ni ensaladas seleccionados.</p>
+                  )}
+                </SummaryCard>
+              )}
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-[#0b0c0e] p-6">
@@ -1119,14 +1395,36 @@ export default function EventCalculator() {
                 </div>
                 <div>
                   <p className="text-xs text-white/50">Hospedaje</p>
-                  <p className="text-lg font-semibold text-white">{formatCurrency(quote.lodgingCost)}</p>
+                  <p className="text-lg font-semibold text-white">
+                    {formatCurrency(quote.lodgingCost)}
+                    {quote.grillMastersCount > 0 && (
+                      <span className="ml-1 text-xs text-white/50">({quote.grillMastersCount} parrilleros)</span>
+                    )}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-[#fd0200]">
-                {quote.isTravelPending ? "TOTAL PARCIAL" : "TOTAL"}
-              </p>
+                    {quote.isTravelPending ? "TOTAL PARCIAL" : "TOTAL"}
+                  </p>
                   <p className="text-2xl font-bold text-white">{formatCurrency(adjustedTotal)}</p>
                 </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-[#16181d] p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-white">Tipo de servicio</p>
+                  <p className="text-xs text-white/50">Puedes cambiarlo antes de enviar la cotización.</p>
+                </div>
+                <select
+                  value={serviceType}
+                  onChange={(e) => setServiceType(e.target.value as ServiceType)}
+                  className="w-full appearance-none rounded-lg border border-white/10 bg-[#0b0c0e] px-4 py-2.5 text-white outline-none transition-colors focus:border-[#fd0200] sm:w-auto"
+                >
+                  <option value="full">Servicio completo (con ingredientes)</option>
+                  <option value="labor_only">Solo mano de obra (sin ingredientes)</option>
+                </select>
               </div>
             </div>
 
@@ -1173,7 +1471,7 @@ export default function EventCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0c0e] px-4 py-12 font-sans text-white pb-24 lg:pb-40">
+    <div className="min-h-screen bg-[#0b0c0e] px-4 py-12 pb-24 font-sans text-white lg:pb-40">
       <div className="mx-auto max-w-6xl">
         <header className="mb-10 text-center">
           <div className="flex items-center justify-center gap-3">
@@ -1235,7 +1533,12 @@ export default function EventCalculator() {
                 <button
                   ref={nextButtonRef}
                   type="button"
-                  onClick={() => setStep((s) => Math.min(TOTAL_STEPS, s + 1))}
+                  onClick={() =>
+                    setStep((s) => {
+                      if (s === 2 && skipMenuSelection) return TOTAL_STEPS;
+                      return Math.min(TOTAL_STEPS, s + 1);
+                    })
+                  }
                   disabled={!canGoNext()}
                   className={cn(
                     "flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
@@ -1294,21 +1597,11 @@ export default function EventCalculator() {
                 <X className="h-5 w-5" />
               </button>
 
-              <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-[#1f2229] to-[#0b0c0e]">
-                {modalRecipe.image ? (
-                  <Image
-                    src={modalRecipe.image}
-                    alt={modalRecipe.name}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  (() => {
-                    const Icon = RECIPE_ICONS[modalRecipe.id] || ChefHat;
-                    return <Icon className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 text-[#fd0200]/50" />;
-                  })()
-                )}
-              </div>
+              <ImageCarousel
+                images={modalRecipe.images || []}
+                name={modalRecipe.name}
+                recipeId={modalRecipe.id}
+              />
 
               <div className="p-8">
                 <h3 className="text-2xl font-semibold text-white">
@@ -1411,10 +1704,12 @@ export default function EventCalculator() {
       {isClient && quote && (
         <OwnerPDF
           ref={pdfRef}
-          eventDate={eventDate}
+          eventDate={isoEventDate}
           pax={pax}
           state={selectedState}
           city={selectedCity}
+          serviceType={serviceType}
+          skipMenu={skipMenuSelection}
           assignedBranch={quote.assignedBranch}
           modalityName={selectedModality?.name ?? ""}
           recipes={selectedRecipeIds

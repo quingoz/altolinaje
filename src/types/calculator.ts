@@ -57,6 +57,10 @@ export interface MenuModality {
   minRecipes: number;
   maxRecipes: number;
   description: string;
+  /** Mínimo de personas requeridas para esta modalidad, si aplica. */
+  minPax?: number;
+  /** Si es true, omite la selección de recetas, contornos y ensaladas y va directo al resumen. */
+  skipMenu?: boolean;
   /** Ruta de la imagen representativa de la modalidad (relativa a /public). */
   image?: string;
 }
@@ -66,7 +70,9 @@ export interface MenuOption {
   id: string;
   name: string;
   description?: string;
-  /** Ruta de la imagen de la opción (relativa a /public). Si no se define, se usa un ícono por defecto. */
+  /** Rutas de las imágenes de la opción (relativas a /public). Si no se definen, se usa un ícono por defecto. */
+  images?: string[];
+  /** Ruta de la imagen de la opción. Obsoleto: usar `images`. */
   image?: string;
 }
 
@@ -75,6 +81,8 @@ export interface RateConfig {
   baseRates: {
     regionalPricePerPerson: number;
     nationalPricePerPerson: number;
+    laborOnlyRegionalPricePerPerson: number;
+    laborOnlyNationalPricePerPerson: number;
     regionalStates: string[];
   };
   branches: Record<string, BranchConfig>;

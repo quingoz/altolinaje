@@ -5,11 +5,15 @@ import Image from "next/image";
 import { jsPDF } from "jspdf";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
+type ServiceType = "full" | "labor_only";
+
 export interface OwnerPDFData {
   eventDate: string;
   pax: number;
   state: string;
   city: string;
+  serviceType?: ServiceType;
+  skipMenu?: boolean;
   assignedBranch: string;
   modalityName: string;
   recipes: string[];
@@ -172,6 +176,16 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                   </td>
                   <td className="p-2">{props.pax} personas</td>
                 </tr>
+                <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
+                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
+                    Tipo de servicio
+                  </td>
+                  <td className="p-2">
+                    {props.serviceType === "labor_only"
+                      ? "Solo mano de obra"
+                      : "Servicio completo"}
+                  </td>
+                </tr>
                 <tr className="bg-[#f9fafb]">
                   <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Sucursal asignada
@@ -194,24 +208,36 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                   </td>
                   <td className="p-2">{props.modalityName || "-"}</td>
                 </tr>
-                <tr className="border-b border-[#e5e7eb]">
-                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
-                    Recetas
-                  </td>
-                  <td className="p-2">{props.recipes.join(", ") || "-"}</td>
-                </tr>
-                <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
-                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
-                    Contornos
-                  </td>
-                  <td className="p-2">{props.sides.join(", ") || "-"}</td>
-                </tr>
-                <tr>
-                  <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
-                    Ensaladas
-                  </td>
-                  <td className="p-2">{props.salads.join(", ") || "-"}</td>
-                </tr>
+                {!props.skipMenu && (
+                  <>
+                    <tr className="border-b border-[#e5e7eb]">
+                      <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
+                        Recetas
+                      </td>
+                      <td className="p-2">{props.recipes.join(", ") || "-"}</td>
+                    </tr>
+                    <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
+                      <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
+                        Contornos
+                      </td>
+                      <td className="p-2">{props.sides.join(", ") || "-"}</td>
+                    </tr>
+                    <tr>
+                      <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
+                        Ensaladas
+                      </td>
+                      <td className="p-2">{props.salads.join(", ") || "-"}</td>
+                    </tr>
+                  </>
+                )}
+                {props.skipMenu && (
+                  <tr>
+                    <td className="w-1/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
+                      Menú
+                    </td>
+                    <td className="p-2">Proteínas y acompañamientos a definir en la negociación.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </section>

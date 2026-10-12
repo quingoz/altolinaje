@@ -7,16 +7,16 @@ import PlaceholderImage from "@/components/ui/PlaceholderImage";
 const CATEGORIES = ["Todas", "Boda", "Empresarial", "Familiar", "Cumpleaños"];
 
 const EVENTS = [
-  { id: "1", title: "Boda campestre", category: "Boda", aspect: "aspect-[3/4]" },
-  { id: "2", title: "Evento corporativo", category: "Empresarial", aspect: "aspect-[4/3]" },
-  { id: "3", title: "Cumpleaños familiar", category: "Cumpleaños", aspect: "aspect-[3/4]" },
-  { id: "4", title: "Fiesta de fin de año", category: "Empresarial", aspect: "aspect-[4/3]" },
-  { id: "5", title: "Boda íntima", category: "Boda", aspect: "aspect-[3/4]" },
-  { id: "6", title: "Encuentro familiar", category: "Familiar", aspect: "aspect-[4/3]" },
-  { id: "7", title: "Cumpleaños sorpresa", category: "Cumpleaños", aspect: "aspect-[3/4]" },
-  { id: "8", title: "Lanzamiento de marca", category: "Empresarial", aspect: "aspect-[4/3]" },
-  { id: "9", title: "Boda al atardecer", category: "Boda", aspect: "aspect-[4/3]" },
-  { id: "10", title: "Reunión familiar", category: "Familiar", aspect: "aspect-[3/4]" },
+  { id: "1", title: "Boda campestre", category: "Boda" },
+  { id: "2", title: "Evento corporativo", category: "Empresarial" },
+  { id: "3", title: "Cumpleaños familiar", category: "Cumpleaños" },
+  { id: "4", title: "Fiesta de fin de año", category: "Empresarial" },
+  { id: "5", title: "Boda íntima", category: "Boda" },
+  { id: "6", title: "Encuentro familiar", category: "Familiar" },
+  { id: "7", title: "Cumpleaños sorpresa", category: "Cumpleaños" },
+  { id: "8", title: "Lanzamiento de marca", category: "Empresarial" },
+  { id: "9", title: "Boda al atardecer", category: "Boda" },
+  { id: "10", title: "Reunión familiar", category: "Familiar" },
 ];
 
 export default function EventGallery() {
@@ -46,7 +46,7 @@ export default function EventGallery() {
 
       <motion.div
         layout
-        className="mt-12 columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3"
+        className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
         <AnimatePresence mode="popLayout">
           {filtered.map((event) => (
@@ -57,13 +57,13 @@ export default function EventGallery() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.25 }}
-              className="break-inside-avoid overflow-hidden rounded-2xl border border-white/10 bg-[#16181d]"
+              className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#16181d]"
             >
               <PlaceholderImage
                 alt={`Foto del evento: ${event.title}`}
-                className={`w-full ${event.aspect}`}
+                className="aspect-[4/3] w-full"
               />
-              <figcaption className="p-4">
+              <figcaption className="flex flex-1 flex-col p-4">
                 <span className="text-xs font-medium text-[#fd0200]">
                   {event.category}
                 </span>
