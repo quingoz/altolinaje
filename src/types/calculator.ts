@@ -96,6 +96,8 @@ export interface RateConfig {
   lodging: {
     costPerParrillero: number;
     paxPerParrillero: number;
+    baseParrilleros: number;
+    minParrilleros: number;
     citiesRequiringLodging: string[];
   };
   menuOptions: {

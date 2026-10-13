@@ -4010,7 +4010,9 @@ module.exports = {
     },
     "lodging": {
         "costPerParrillero": 40,
-        "paxPerParrillero": 40,
+        "paxPerParrillero": 20,
+        "baseParrilleros": 1,
+        "minParrilleros": 2,
         "citiesRequiringLodging": [
             "Mérida",
             "Trujillo",
@@ -4253,7 +4255,7 @@ function calculateQuote(params) {
     const travelCost = isTravelPending ? 0 : isTravelDoubled ? stateCityRate * rateConfig.travel.heavyLogisticsMultiplier : stateCityRate;
     // Costo de hospedaje
     const requiresLodging = rateConfig.lodging.citiesRequiringLodging.includes(city);
-    const grillMastersCount = requiresLodging ? Math.ceil(pax / rateConfig.lodging.paxPerParrillero) : 0;
+    const grillMastersCount = requiresLodging && pax > 0 ? Math.max(rateConfig.lodging.minParrilleros, rateConfig.lodging.baseParrilleros + Math.ceil(pax / rateConfig.lodging.paxPerParrillero)) : 0;
     const lodgingCost = grillMastersCount * rateConfig.lodging.costPerParrillero;
     // Total estimado
     const totalEstimate = baseCost + travelCost + lodgingCost;

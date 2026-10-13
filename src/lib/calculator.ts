@@ -101,8 +101,12 @@ export function calculateQuote(
   // Costo de hospedaje
   const requiresLodging =
     rateConfig.lodging.citiesRequiringLodging.includes(city);
-  const grillMastersCount = requiresLodging
-    ? Math.ceil(pax / rateConfig.lodging.paxPerParrillero)
+  const grillMastersCount = requiresLodging && pax > 0
+    ? Math.max(
+        rateConfig.lodging.minParrilleros,
+        rateConfig.lodging.baseParrilleros +
+          Math.ceil(pax / rateConfig.lodging.paxPerParrillero)
+      )
     : 0;
   const lodgingCost = grillMastersCount * rateConfig.lodging.costPerParrillero;
 

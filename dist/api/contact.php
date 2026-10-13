@@ -44,7 +44,7 @@ if (mb_strlen($name) > 100 || mb_strlen($email) > 150 || mb_strlen($phone) > 30 
 $safeName = str_replace(["\r", "\n"], ' ', $name);
 $safeEmail = str_replace(["\r", "\n"], '', $email);
 $safePhone = str_replace(["\r", "\n"], ' ', $phone);
-$recipient = 'quintanaanthony7@gmail.com';
+$recipient = 'altolinajeve@gmail.com';
 $subject = 'Nuevo mensaje de contacto - Alto Linaje';
 $body = "Nombre: {$safeName}\nCorreo: {$safeEmail}\nTeléfono: " . ($safePhone !== '' ? $safePhone : 'No indicado') . "\n\nMensaje:\n{$message}\n";
 $headers = [
