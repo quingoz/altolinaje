@@ -35,6 +35,26 @@
         "Puerto La Cruz": 380,
         "El Tigre": 500
       },
+      "Aragua": {
+        "Colonia Tovar": 160,
+        "Maracay": 200,
+        "La Victoria": 180
+      },
+      "Carabobo": {
+        "Valencia": 250,
+        "San Diego": 250,
+        "Naguanagua": 250
+      },
+      "Distrito Capital": {
+        "Caracas": 120
+      },
+      "La Guaira": {
+        "Galipán": 160
+      },
+      "Mérida": {
+        "Mérida": 250,
+        "El Vigía": 200
+      },
       "Lara": {
         "Carora": 500,
         "Barquisimeto": 400,
@@ -57,7 +77,9 @@
         "Puerto Ordaz": 600
       },
       "Miranda": {
-        "Higuerote": 180
+        "Higuerote": 180,
+        "Guarenas": 140,
+        "Guatire": 150
       },
       "Nueva Esparta": {
         "Margarita": 500

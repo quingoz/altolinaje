@@ -84,6 +84,8 @@ const VENEZUELA_LOCATIONS = {
     ],
     Aragua: [
         "Maracay",
+        "La Victoria",
+        "Colonia Tovar",
         "Otra"
     ],
     Barinas: [
@@ -99,6 +101,8 @@ const VENEZUELA_LOCATIONS = {
     ],
     Carabobo: [
         "Valencia",
+        "San Diego",
+        "Naguanagua",
         "Otra"
     ],
     Cojedes: [
@@ -125,6 +129,7 @@ const VENEZUELA_LOCATIONS = {
     "La Guaira": [
         "La Guaira",
         "Maiquetía",
+        "Galipán",
         "Otra"
     ],
     Lara: [
@@ -142,6 +147,8 @@ const VENEZUELA_LOCATIONS = {
         "Caracas",
         "Los Teques",
         "Higuerote",
+        "Guarenas",
+        "Guatire",
         "Otra"
     ],
     Monagas: [
@@ -3968,6 +3975,26 @@ module.exports = {
                 "Puerto La Cruz": 380,
                 "El Tigre": 500
             },
+            "Aragua": {
+                "Colonia Tovar": 160,
+                "Maracay": 200,
+                "La Victoria": 180
+            },
+            "Carabobo": {
+                "Valencia": 250,
+                "San Diego": 250,
+                "Naguanagua": 250
+            },
+            "Distrito Capital": {
+                "Caracas": 120
+            },
+            "La Guaira": {
+                "Galipán": 160
+            },
+            "Mérida": {
+                "Mérida": 250,
+                "El Vigía": 200
+            },
             "Lara": {
                 "Carora": 500,
                 "Barquisimeto": 400,
@@ -3990,7 +4017,9 @@ module.exports = {
                 "Puerto Ordaz": 600
             },
             "Miranda": {
-                "Higuerote": 180
+                "Higuerote": 180,
+                "Guarenas": 140,
+                "Guatire": 150
             },
             "Nueva Esparta": {
                 "Margarita": 500

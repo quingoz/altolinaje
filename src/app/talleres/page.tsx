@@ -30,6 +30,12 @@ const VIDEOS = [
   "/images/talleres/video-taller-2.mp4",
 ];
 
+const STATS = [
+  { value: "+300", label: "Talleres dictados" },
+  { value: "+15", label: "Ciudades visitadas" },
+  { value: "+2000", label: "Participantes" },
+];
+
 export default function TalleresPage() {
   return (
     <div className="min-h-screen bg-[#0b0c0e] text-white">
@@ -87,6 +93,22 @@ export default function TalleresPage() {
               </a>
             </aside>
           </div>
+        </div>
+      </section>
+
+      <section className="border-y border-white/10 bg-[#16181d] px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 text-center sm:grid-cols-3 sm:gap-0">
+          {STATS.map((stat, index) => (
+            <div
+              key={stat.label}
+              className={index > 0 ? "sm:border-l sm:border-white/10" : undefined}
+            >
+              <p className="text-4xl font-bold text-[#f8b900] sm:text-5xl">{stat.value}</p>
+              <p className="mt-2 text-sm font-medium uppercase tracking-[0.15em] text-white/60">
+                {stat.label}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
