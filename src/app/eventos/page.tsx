@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import EventGallery from "./EventGallery";
 
 export const metadata: Metadata = {
-  title: "Eventos",
+  title: "Catering",
   description:
-    "Galería de eventos Alto Linaje: bodas, corporativos, cumpleaños y reuniones familiares con parrilla en sitio.",
+    "Galería de experiencias de catering y parrilla en sitio de Alto Linaje.",
 };
 
 export default function EventosPage() {
@@ -13,11 +13,11 @@ export default function EventosPage() {
       <div className="mx-auto max-w-6xl">
         <div className="text-center">
           <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-            Galería de eventos
+            Galería de catering
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-white/70">
-            Un vistazo a experiencias Alto Linaje: bodas, empresas, fiestas y
-            encuentros familiares alrededor del fuego.
+            Un vistazo a las experiencias de Alto Linaje y a nuestra pasión por
+            crear momentos memorables alrededor del fuego.
           </p>
         </div>
 

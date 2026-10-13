@@ -25,12 +25,33 @@ export default function ContactForm() {
     phone: "",
     message: "",
   });
-  const [sent, setSent] = useState(false);
+  const [website, setWebsite] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 4000);
+    setStatus("sending");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("/api/contact.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, website }),
+      });
+      const result = (await response.json()) as { success?: boolean; message?: string };
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "No se pudo enviar el mensaje.");
+      }
+
+      setForm({ name: "", email: "", phone: "", message: "" });
+      setStatus("sent");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "No se pudo enviar el mensaje.");
+      setStatus("error");
+    }
   };
 
   return (
@@ -52,6 +73,7 @@ export default function ContactForm() {
             <input
               type="text"
               required
+              maxLength={100}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="mt-1 w-full rounded-lg border border-white/10 bg-[#0b0c0e] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
@@ -64,6 +86,7 @@ export default function ContactForm() {
             <input
               type="email"
               required
+              maxLength={150}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="mt-1 w-full rounded-lg border border-white/10 bg-[#0b0c0e] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
@@ -75,6 +98,7 @@ export default function ContactForm() {
             </label>
             <input
               type="tel"
+              maxLength={30}
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="mt-1 w-full rounded-lg border border-white/10 bg-[#0b0c0e] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
@@ -87,22 +111,52 @@ export default function ContactForm() {
             <textarea
               required
               rows={4}
+              maxLength={3000}
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
               className="mt-1 w-full rounded-lg border border-white/10 bg-[#0b0c0e] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
             />
           </div>
 
+          <input
+            type="text"
+            name="website"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            className="hidden"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+          />
+
+          {status === "error" && (
+            <p role="alert" className="text-sm text-[#fd0200]">
+              {errorMessage}
+            </p>
+          )}
+
+          {status === "sent" && (
+            <p role="status" className="text-sm text-green-400">
+              Mensaje enviado correctamente. Te responderemos lo antes posible.
+            </p>
+          )}
+
           <button
             type="submit"
+            disabled={status === "sending"}
             className={cn(
               "w-full rounded-full py-3 font-semibold text-white transition-colors",
-              sent
+              status === "sent"
                 ? "bg-green-600 hover:bg-green-700"
-                : "bg-[#fd0200] hover:bg-red-600"
+                : "bg-[#fd0200] hover:bg-red-600",
+              status === "sending" && "cursor-wait opacity-60"
             )}
           >
-            {sent ? "¡Mensaje enviado!" : "Enviar mensaje"}
+            {status === "sending"
+              ? "Enviando..."
+              : status === "sent"
+                ? "¡Mensaje enviado!"
+                : "Enviar mensaje"}
           </button>
         </div>
       </form>

@@ -353,6 +353,11 @@ function ModalityCard({
           {typeof modality.minPax === "number" && (
             <span className="block">Mínimo {modality.minPax} personas</span>
           )}
+          {typeof modality.recommendedMinPax === "number" && (
+            <span className="block">
+              Recomendada a partir de {modality.recommendedMinPax} personas
+            </span>
+          )}
           {disabled ? (
             <span>Requiere mínimo {modality.minPax} personas</span>
           ) : (
@@ -880,6 +885,7 @@ export default function EventCalculator() {
 
   const nextButtonRef = useRef<HTMLButtonElement>(null);
   const stepCardRef = useRef<HTMLDivElement>(null);
+  const datePickerRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     stepCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1036,12 +1042,11 @@ export default function EventCalculator() {
       .filter(Boolean) as string[],
   });
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = async () => {
     if (!allValid || !quote || !selectedModality) return;
+    const openedWindow = window.open("", "_blank");
     const { recipes, sides, salads } = getMenuNames();
-
-    sendQuoteToWhatsApp({
-      phone: ownerPhone,
+    const quoteData = {
       eventDate: isoEventDate,
       city: selectedCity,
       state: selectedState,
@@ -1059,7 +1064,36 @@ export default function EventCalculator() {
       isTravelDoubled: quote.isTravelDoubled,
       grillMastersCount: quote.grillMastersCount,
       ownerMargin: isOwner ? ownerMargin : undefined,
-    });
+    };
+
+    try {
+      const response = await fetch("/api/save-quote.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(quoteData),
+      });
+      const result = (await response.json()) as {
+        success?: boolean;
+        id?: string;
+        message?: string;
+      };
+      if (!response.ok || !result.success || !result.id) {
+        throw new Error(result.message || "No se pudo guardar la cotización.");
+      }
+
+      const quoteUrl = `${window.location.origin}/cotizacion/?id=${result.id}`;
+      sendQuoteToWhatsApp(
+        { phone: ownerPhone, ...quoteData, quoteUrl },
+        openedWindow
+      );
+    } catch (error) {
+      openedWindow?.close();
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "No se pudo guardar la cotización. Intenta nuevamente."
+      );
+    }
   };
 
   const handlePinSubmit = () => {
@@ -1086,43 +1120,51 @@ export default function EventCalculator() {
       case 1:
         return (
           <section className="space-y-8" key="step-1">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-white/80">
-                Cantidad de personas
-              </label>
-              <input
-                type="number"
-                min={1}
-                value={pax}
-                onChange={(e) => {
-                  const raw = e.target.value;
-                  const next = raw === "" ? 0 : Number(raw);
-                  if (!Number.isNaN(next)) setPax(next);
-                }}
-                onBlur={() => {
-                  if (pax < 1) setPax(1);
-                }}
-                className="w-full rounded-lg border border-white/10 bg-[#16181d] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
-              />
-              {pax < 1 && (
-                <p className="text-xs text-[#fd0200]">
-                  La cantidad mínima es 1 persona.
-                </p>
-              )}
-            </div>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-white/80">
+                  Cantidad de personas
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  value={pax}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "") {
+                      setPax(0);
+                      return;
+                    }
+                    const normalized = raw.replace(/^0+/, "") || "1";
+                    e.target.value = normalized;
+                    const next = Number(normalized);
+                    if (!Number.isNaN(next)) setPax(next);
+                  }}
+                  onBlur={() => {
+                    if (pax < 1) setPax(1);
+                  }}
+                  className="w-full rounded-lg border border-white/10 bg-[#16181d] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
+                />
+                {pax < 1 && (
+                  <p className="text-xs text-[#fd0200]">
+                    La cantidad mínima es 1 persona.
+                  </p>
+                )}
+              </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-white/80">
-                Tipo de servicio
-              </label>
-              <select
-                value={serviceType}
-                onChange={(e) => setServiceType(e.target.value as ServiceType)}
-                className="w-full appearance-none rounded-lg border border-white/10 bg-[#16181d] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
-              >
-                <option value="full">Servicio completo (con ingredientes)</option>
-                <option value="labor_only">Solo mano de obra (sin ingredientes)</option>
-              </select>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-white/80">
+                  Tipo de servicio
+                </label>
+                <select
+                  value={serviceType}
+                  onChange={(e) => setServiceType(e.target.value as ServiceType)}
+                  className="w-full appearance-none rounded-lg border border-white/10 bg-[#16181d] px-4 py-3 text-white outline-none transition-colors focus:border-[#fd0200]"
+                >
+                  <option value="full">Servicio completo (con ingredientes)</option>
+                  <option value="labor_only">Solo mano de obra (sin ingredientes)</option>
+                </select>
+              </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -1172,7 +1214,6 @@ export default function EventCalculator() {
                 Fecha del evento
               </label>
               <div className="relative">
-                <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
                 <input
                   type="text"
                   inputMode="numeric"
@@ -1187,7 +1228,27 @@ export default function EventCalculator() {
                     setEventDate(formatted);
                   }}
                   maxLength={10}
-                  className="w-full rounded-lg border border-white/10 bg-[#16181d] py-3 pl-10 pr-4 text-white outline-none transition-colors focus:border-[#fd0200]"
+                  className="w-full rounded-lg border border-white/10 bg-[#16181d] py-3 pl-4 pr-12 text-white outline-none transition-colors focus:border-[#fd0200]"
+                />
+                <button
+                  type="button"
+                  onClick={() => datePickerRef.current?.showPicker()}
+                  className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-white/50 transition-colors hover:bg-white/5 hover:text-[#fd0200]"
+                  aria-label="Abrir calendario"
+                >
+                  <Calendar className="h-5 w-5" />
+                </button>
+                <input
+                  ref={datePickerRef}
+                  type="date"
+                  value={isoEventDate}
+                  onChange={(e) => {
+                    const [year, month, day] = e.target.value.split("-");
+                    setEventDate(e.target.value ? `${day}/${month}/${year}` : "");
+                  }}
+                  className="pointer-events-none absolute bottom-0 right-0 h-0 w-0 opacity-0"
+                  tabIndex={-1}
+                  aria-hidden="true"
                 />
               </div>
               {quote.isTravelPending && (

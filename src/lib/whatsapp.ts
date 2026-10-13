@@ -19,6 +19,7 @@ export interface WhatsAppQuoteParams {
   isTravelDoubled?: boolean;
   grillMastersCount?: number;
   ownerMargin?: number;
+  quoteUrl?: string;
 }
 
 const DEFAULT_PHONE = "584147046714";
@@ -49,6 +50,7 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     isTravelDoubled,
     grillMastersCount,
     ownerMargin,
+    quoteUrl,
   } = params;
 
   const hasOwnerAdjustment = typeof ownerMargin === "number" && ownerMargin !== 0;
@@ -86,15 +88,20 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     isTravelPending
       ? "*Nota:* El traslado está por confirmar y no está incluido en el total parcial. Cotización sujeta a confirmación y disponibilidad de fecha."
       : "*Nota:* Cotización sujeta a confirmación y disponibilidad de fecha.",
-  ].join("\n");
+    quoteUrl ? "" : null,
+    quoteUrl ? "*Ver cotización guardada:*" : null,
+    quoteUrl || null,
+  ].filter((line): line is string => line !== null).join("\n");
 }
 
-export function sendQuoteToWhatsApp(params: WhatsAppQuoteParams) {
+export function sendQuoteToWhatsApp(params: WhatsAppQuoteParams, openedWindow?: Window | null) {
   const phone = params.phone?.replace(/\D/g, "") || DEFAULT_PHONE;
   const message = buildWhatsAppMessage(params);
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
-  if (typeof window !== "undefined") {
+  if (openedWindow) {
+    openedWindow.location.href = url;
+  } else if (typeof window !== "undefined") {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 }

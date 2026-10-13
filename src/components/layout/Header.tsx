@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/comidas", label: "Menú" },
   { href: "/eventos", label: "Catering" },
+  { href: "/talleres", label: "Talleres" },
   { href: "/faqs", label: "Preguntas" },
   { href: "/contacto", label: "Contacto" },
   { href: "/nosotros", label: "Nosotros" },

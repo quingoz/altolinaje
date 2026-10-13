@@ -59,6 +59,7 @@ export interface MenuModality {
   description: string;
   /** Mínimo de personas requeridas para esta modalidad, si aplica. */
   minPax?: number;
+  recommendedMinPax?: number;
   /** Si es true, omite la selección de recetas, contornos y ensaladas y va directo al resumen. */
   skipMenu?: boolean;
   /** Ruta de la imagen representativa de la modalidad (relativa a /public). */
