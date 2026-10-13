@@ -3,3 +3,4 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/agustinguanipa/altolinajeve.com
     - /bin/cp -R dist/* $DEPLOYPATH
+    - /bin/cp dist/.htaccess $DEPLOYPATH/.htaccess
