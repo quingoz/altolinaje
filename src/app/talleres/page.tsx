@@ -26,8 +26,8 @@ const PHOTOS = [
 ];
 
 const VIDEOS = [
-  "/images/talleres/video-taller-1.mp4",
-  "/images/talleres/video-taller-2.mp4",
+  "/images/talleres/taller-1.mp4",
+  "/images/talleres/taller-2.mp4",
 ];
 
 const STATS = [
