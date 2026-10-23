@@ -123,7 +123,7 @@
   ],
   "menuOptions": {
     "modalities": [
-      { "id": "parrilla_libre", "name": "Parrilla Libre", "minRecipes": 4, "maxRecipes": 4, "minSalads": 2, "pricePerPerson": 40, "description": "Eliges 4 tipos de proteína diferentes, 1, 2 o 3 contornos y 2 ensaladas. Presentado en las parrilleras estilo libre directo a la mesa. 3 horas de servicio ilimitado." },
+      { "id": "parrilla_libre", "name": "Parrilla Libre", "minRecipes": 4, "maxRecipes": 4, "minSalads": 2, "pricePerPerson": 40, "description": "Eliges 4 tipos de proteína diferentes, 1, 2 o 3 contornos y 2 ensaladas. Presentado en las parrilleras estilo libre directo a la mesa. 3 horas de servicio ilimitado.", "image": "/images/mode-doble-tanda.jpg" },
       { "id": "self_service", "name": "Self-Service", "minRecipes": 2, "maxRecipes": 3, "description": "Nuestro equipo desplegara cada estacion de comida en los Chef and Dish. El servicio finaliza al momento que se agota la comida.", "image": "/images/mode-self-services.jpg" },
       { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "800 gr de proteína por persona + 200 gr de contornos + ensaladas. Servidas en las Cajas Alto Linaje en dos oportunidades, con una diferencia de 2 a 3 horas. La capacidad de cada caja es de 8 a 10 personas.", "image": "/images/mode-doble-tanda.jpg" },
       { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondrán de una mesa de contornos y ensaladas para servirse al gusto, mientras los chefs pasan directamente por las mesas ofreciendo una rotación constante de cortes durante 3 horas de servicio de rodizio.", "image": "/images/mode-rodizio.jpg" },
