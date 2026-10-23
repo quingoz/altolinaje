@@ -1,3 +1,5 @@
+import type { ExtraLine } from "@/types/calculator";
+
 export type ServiceType = "full" | "labor_only";
 
 export interface WhatsAppQuoteParams {
@@ -11,6 +13,8 @@ export interface WhatsAppQuoteParams {
   recipes: string[];
   sides: string[];
   salads: string[];
+  extras?: ExtraLine[];
+  extrasCost?: number;
   baseCost: number;
   travelCost: number;
   isTravelPending?: boolean;
@@ -78,8 +82,14 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     `• Contornos: ${sides.join(", ") || "-"}`,
     `• Ensaladas: ${salads.join(", ") || "-"}`,
     "",
+    "*Entradas y adicionales:*",
+    ...(params.extras?.length
+      ? params.extras.map((item) => `• ${item.name}: ${formatCurrency(item.price)} por ${item.unit === "table" ? "mesa" : "persona"} x ${item.quantity} = ${formatCurrency(item.total)}`)
+      : ["Sin entradas ni adicionales"]),
+    "",
     "*Desglose de Cotización:*",
     `• Servicio: ${formatCurrency(baseCost)}`,
+    `• Entradas y adicionales: ${formatCurrency(params.extrasCost ?? 0)}`,
     `• Logística/Traslado: ${isTravelPending ? "Por confirmar" : `${formatCurrency(travelCost)}${travelNote}`}`,
     `• Hospedaje${lodgingNote}: ${formatCurrency(lodgingCost)}`,
     hasOwnerAdjustment ? adjustment : "",

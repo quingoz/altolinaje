@@ -4,6 +4,7 @@ import html2canvas from "html2canvas";
 import Image from "next/image";
 import { jsPDF } from "jspdf";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import type { ExtraLine } from "@/types/calculator";
 
 type ServiceType = "full" | "labor_only";
 
@@ -23,6 +24,8 @@ export interface OwnerPDFData {
   travelCost: number;
   isTravelPending: boolean;
   lodgingCost: number;
+  extras?: ExtraLine[];
+  extrasCost?: number;
   total: number;
   ownerMargin: number;
   isTravelDoubled: boolean;
@@ -91,13 +94,60 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
             },
           });
 
-          const imgData = canvas.toDataURL("image/jpeg", 1.0);
           const pdf = new jsPDF("p", "pt", "a4");
 
           const pageWidth = pdf.internal.pageSize.getWidth();
-          const imgHeight = (canvas.height * pageWidth) / canvas.width;
+          const pageHeight = pdf.internal.pageSize.getHeight();
+          const pageCanvasHeight = Math.floor(
+            (canvas.width * pageHeight) / pageWidth
+          );
 
-          pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, imgHeight);
+          let renderedHeight = 0;
+          let pageIndex = 0;
+
+          while (renderedHeight < canvas.height) {
+            const sliceHeight = Math.min(
+              pageCanvasHeight,
+              canvas.height - renderedHeight
+            );
+            const pageCanvas = document.createElement("canvas");
+            pageCanvas.width = canvas.width;
+            pageCanvas.height = sliceHeight;
+
+            const context = pageCanvas.getContext("2d");
+            if (context) {
+              context.fillStyle = "#ffffff";
+              context.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+              context.drawImage(
+                canvas,
+                0,
+                renderedHeight,
+                canvas.width,
+                sliceHeight,
+                0,
+                0,
+                canvas.width,
+                sliceHeight
+              );
+            }
+
+            const imgHeight = (sliceHeight * pageWidth) / canvas.width;
+            if (pageIndex > 0) {
+              pdf.addPage();
+            }
+            pdf.addImage(
+              pageCanvas.toDataURL("image/jpeg", 1.0),
+              "JPEG",
+              0,
+              0,
+              pageWidth,
+              imgHeight
+            );
+
+            renderedHeight += sliceHeight;
+            pageIndex += 1;
+          }
+
           pdf.save(`alto-linaje-cotizacion-${quoteCode}.pdf`);
         } finally {
           el.style.position = originalPosition;
@@ -112,6 +162,11 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
     const hasMargin = props.ownerMargin !== 0;
     const marginAmount = props.total * (props.ownerMargin / 100);
     const adjustedTotal = props.total + marginAmount;
+    const extras = props.extras ?? [];
+    const hasExtras = extras.length > 0;
+    const extrasSubtotal =
+      props.extrasCost ??
+      extras.reduce((acc, extra) => acc + extra.total, 0);
 
     return (
       <div
@@ -242,6 +297,69 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
             </table>
           </section>
 
+          {hasExtras && (
+            <section>
+              <h2 className="text-[12pt] font-bold uppercase tracking-wider text-[#fd0200]">
+                Extras seleccionados
+              </h2>
+              <table className="mt-2 w-full border-collapse border border-[#d1d5db] text-[10pt]">
+                <thead>
+                  <tr className="border-b border-[#d1d5db] bg-[#f9fafb]">
+                    <th className="p-2 text-left font-semibold text-[#374151]">
+                      Extra
+                    </th>
+                    <th className="w-20 p-2 text-right font-semibold text-[#374151]">
+                      Cantidad
+                    </th>
+                    <th className="w-28 p-2 text-right font-semibold text-[#374151]">
+                      Precio unit.
+                    </th>
+                    <th className="w-28 p-2 text-right font-semibold text-[#374151]">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {extras.map((extra) => (
+                    <tr
+                      key={extra.id}
+                      className="border-b border-[#e5e7eb]"
+                    >
+                      <td className="p-2">
+                        {extra.name}
+                        {extra.description && (
+                          <span className="ml-1 text-[8pt] text-[#6b7280]">
+                            ({extra.description})
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-2 text-right font-mono">
+                        {extra.quantity}
+                      </td>
+                      <td className="p-2 text-right font-mono">
+                        {formatCurrency(extra.price)}
+                      </td>
+                      <td className="p-2 text-right font-mono">
+                        {formatCurrency(extra.total)}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="bg-[#f9fafb]">
+                    <td
+                      colSpan={3}
+                      className="p-2 text-right font-semibold uppercase text-[#374151]"
+                    >
+                      Subtotal extras
+                    </td>
+                    <td className="p-2 text-right font-mono font-bold">
+                      {formatCurrency(extrasSubtotal)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          )}
+
           <section>
             <h2 className="text-[12pt] font-bold uppercase tracking-wider text-[#fd0200]">
               Resumen de cotización
@@ -282,6 +400,19 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                     {formatCurrency(props.lodgingCost)}
                   </td>
                 </tr>
+                {hasExtras && (
+                  <tr className="border-b border-[#e5e7eb]">
+                    <td className="w-2/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
+                      Extras
+                      <span className="ml-1 text-[8pt] text-[#6b7280]">
+                        ({extras.length} ítems)
+                      </span>
+                    </td>
+                    <td className="p-2 text-right font-mono">
+                      {formatCurrency(extrasSubtotal)}
+                    </td>
+                  </tr>
+                )}
                 {hasMargin && (
                   <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
                     <td className="w-2/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">

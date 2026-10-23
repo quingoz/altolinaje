@@ -96,6 +96,7 @@ const STEP_TITLES = [
   "Recetas",
   "Contornos",
   "Ensaladas",
+  "Entradas y adicionales",
   "Resumen",
 ];
 
@@ -880,6 +881,7 @@ export default function EventCalculator() {
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
   const [selectedSideIds, setSelectedSideIds] = useState<string[]>([]);
   const [selectedSaladIds, setSelectedSaladIds] = useState<string[]>([]);
+  const [selectedExtraIds, setSelectedExtraIds] = useState<string[]>([]);
 
   const [modalRecipe, setModalRecipe] = useState<MenuOption | null>(null);
 
@@ -923,8 +925,10 @@ export default function EventCalculator() {
         state: selectedState,
         city: selectedCity,
         serviceType,
+        modalityId: selectedModalityId ?? undefined,
+        extraIds: selectedExtraIds,
       }),
-    [pax, selectedState, selectedCity, serviceType]
+    [pax, selectedState, selectedCity, serviceType, selectedModalityId, selectedExtraIds]
   );
 
   const adjustedTotal = useMemo(
@@ -955,7 +959,8 @@ export default function EventCalculator() {
     : false;
 
   const sidesValid = skipMenuSelection || (selectedSideIds.length >= 1 && selectedSideIds.length <= MAX_SIDES);
-  const saladsValid = skipMenuSelection || selectedSaladIds.length <= MAX_SALADS;
+  const minSalads = selectedModality?.minSalads ?? 0;
+  const saladsValid = skipMenuSelection || (selectedSaladIds.length >= minSalads && selectedSaladIds.length <= MAX_SALADS);
   const isoEventDate = parseEventDateToISO(eventDate);
   const step1Valid = pax >= 1 && selectedState.length > 0 && selectedCity.length > 0 && eventDate.length === 10;
 
@@ -969,7 +974,7 @@ export default function EventCalculator() {
   };
 
   const allValid =
-    step1Valid && !!selectedModality && modalityAllowed && recipeValid && sidesValid;
+    step1Valid && !!selectedModality && modalityAllowed && recipeValid && sidesValid && saladsValid;
 
   const handleStateChange = (newState: string) => {
     setSelectedState(newState);
@@ -1056,6 +1061,8 @@ export default function EventCalculator() {
       recipes: skipMenuSelection ? ["A definir en negociación"] : recipes,
       sides: skipMenuSelection ? ["A definir en negociación"] : sides,
       salads: skipMenuSelection ? ["A definir en negociación"] : salads,
+      extras: quote.extras,
+      extrasCost: quote.extrasCost,
       baseCost: quote.baseCost,
       travelCost: quote.travelCost,
       isTravelPending: quote.isTravelPending,
@@ -1363,7 +1370,9 @@ export default function EventCalculator() {
             <ValidationBanner valid={saladsValid}>
               {saladsValid
                 ? `Has seleccionado ${selectedSaladIds.length} ensaladas (máx. 2).`
-                : "Puedes seleccionar hasta 2 ensaladas."}
+                : minSalads === MAX_SALADS
+                  ? `Selecciona ${minSalads} ensaladas para la modalidad ${selectedModality?.name}.`
+                  : "Puedes seleccionar hasta 2 ensaladas."}
             </ValidationBanner>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -1381,10 +1390,43 @@ export default function EventCalculator() {
           </section>
         );
 
-      case 6: {
-        const menuNames = getMenuNames();
+      case 6:
         return (
           <section className="space-y-6" key="step-6">
+            <p className="text-sm text-white/70">Opcional: selecciona las entradas y adicionales que deseas incluir. Cada producto por mesa se cobra por cada 10 invitados, redondeando hacia arriba: {pax} personas ÷ 10 = {Math.ceil(pax / 10)} mesas. Los productos por persona se cobran para los {pax} invitados.</p>
+            {([
+              { title: "Entradas por mesa", category: "entrada", unit: "table" },
+              { title: "Adicionales por mesa", category: "adicional", unit: "table" },
+              { title: "Adicionales por persona", category: "adicional", unit: "person" },
+            ] as const).map((group) => (
+              <div key={group.title} className="space-y-3">
+                <h3 className="font-semibold text-white">{group.title}</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {rateConfig.extras.filter((item) => item.category === group.category && item.unit === group.unit).map((item) => {
+                    const quantity = item.unit === "table" ? Math.ceil(pax / 10) : pax;
+                    return (
+                      <label key={item.id} className={cn("flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors", selectedExtraIds.includes(item.id) ? "border-[#fd0200] bg-[#fd0200]/10" : "border-white/10 bg-[#0b0c0e] hover:border-white/30")}>
+                        <input type="checkbox" checked={selectedExtraIds.includes(item.id)} onChange={() => setSelectedExtraIds((ids) => ids.includes(item.id) ? ids.filter((id) => id !== item.id) : [...ids, item.id])} className="mt-1 accent-[#fd0200]" />
+                        <div className="space-y-1">
+                          <p className="font-medium text-white">{item.name}</p>
+                          {item.description && <p className="text-sm text-white/60">{item.description}</p>}
+                          <p className="text-sm text-white/80">{formatCurrency(item.price)} por {item.unit === "table" ? "mesa" : "persona"} × {quantity} = {formatCurrency(item.price * quantity)}</p>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            <p className="font-semibold text-white">Entradas y adicionales: {formatCurrency(quote.extrasCost)}</p>
+            <button type="button" onClick={() => { setSelectedExtraIds([]); setStep(7); }} className="rounded-full border border-white/20 px-5 py-2.5 text-sm text-white hover:border-white/40">Omitir entradas y adicionales</button>
+          </section>
+        );
+
+      case 7: {
+        const menuNames = getMenuNames();
+        return (
+          <section className="space-y-6" key="step-7">
             <ValidationBanner valid={allValid}>
               {allValid
                 ? "Todo listo. Revisa el resumen antes de enviar tu cotización."
@@ -1443,6 +1485,13 @@ export default function EventCalculator() {
                 </SummaryCard>
               )}
             </div>
+
+            <SummaryCard title="Entradas y adicionales" onEdit={() => setStep(6)}>
+              {quote.extras.length ? quote.extras.map((item) => (
+                <SummaryRow key={item.id} label={`${item.name} (${item.quantity} ${item.unit === "table" ? "mesas" : "personas"} × ${formatCurrency(item.price)})`} value={formatCurrency(item.total)} />
+              )) : <p className="text-sm text-white/40">Sin entradas ni adicionales.</p>}
+              <SummaryRow label="Subtotal" value={formatCurrency(quote.extrasCost)} />
+            </SummaryCard>
 
             <div className="rounded-2xl border border-white/10 bg-[#0b0c0e] p-6">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -1577,7 +1626,7 @@ export default function EventCalculator() {
             <div className="mt-10 flex items-center justify-between border-t border-white/10 pt-6">
               <button
                 type="button"
-                onClick={() => setStep((s) => Math.max(1, s - 1))}
+                onClick={() => setStep((s) => s === 6 && skipMenuSelection ? 2 : Math.max(1, s - 1))}
                 disabled={step === 1}
                 className={cn(
                   "flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
@@ -1596,7 +1645,7 @@ export default function EventCalculator() {
                   type="button"
                   onClick={() =>
                     setStep((s) => {
-                      if (s === 2 && skipMenuSelection) return TOTAL_STEPS;
+                      if (s === 2 && skipMenuSelection) return 6;
                       return Math.min(TOTAL_STEPS, s + 1);
                     })
                   }
@@ -1782,6 +1831,8 @@ export default function EventCalculator() {
           salads={selectedSaladIds
             .map((id) => rateConfig.menuOptions.salads.find((s) => s.id === id)?.name)
             .filter(Boolean) as string[]}
+          extras={quote.extras}
+          extrasCost={quote.extrasCost}
           baseCost={quote.baseCost}
           travelCost={quote.travelCost}
           isTravelPending={quote.isTravelPending}

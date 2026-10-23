@@ -74,16 +74,16 @@ export default function TalleresPage() {
             <aside className="rounded-3xl border border-[#f8b900]/30 bg-gradient-to-br from-[#211d13] to-[#16181d] p-6 text-center sm:p-8">
               <MonitorPlay className="mx-auto h-10 w-10 text-[#f8b900]" />
               <p className="mt-5 text-sm font-semibold uppercase tracking-[0.2em] text-[#f8b900]">
-                Modalidad presencial y online
+                Modalidad online
               </p>
               <h2 className="mt-3 text-4xl font-bold">¡Suscríbete!</h2>
               <p className="mx-auto mt-4 max-w-sm text-white/70">
-                Vive la experiencia principalmente de forma presencial o elige la modalidad online si se adapta mejor a ti.
+                Accede a todos los videos, recetarios y certificado del taller desde donde estés.
               </p>
-              <p className="mt-8 text-sm text-white/50">Modalidad online por tan solo</p>
+              <p className="mt-8 text-sm text-white/50">Suscripción por tan solo</p>
               <p className="mt-1 text-6xl font-bold text-[#f8b900]">$40</p>
               <a
-                href="https://wa.me/584147046714?text=Hola%2C%20quiero%20informaci%C3%B3n%20para%20suscribirme%20al%20Taller%20Triplete%20en%20Brasas%2C%20presencial%20u%20online."
+                href="https://wa.me/584147046714?text=Hola%2C%20quiero%20informaci%C3%B3n%20para%20suscribirme%20al%20Taller%20Triplete%20en%20Brasas%2C%20en%20modalidad%20online."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#f8b900] px-6 py-3 font-semibold text-black transition-colors hover:bg-[#ffd044]"

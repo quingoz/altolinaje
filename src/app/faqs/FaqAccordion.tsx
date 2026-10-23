@@ -6,34 +6,34 @@ import { ChevronDown } from "lucide-react";
 
 const FAQS = [
   {
-    question: "¿El parrillero va incluido en el servicio?",
+    question: "¿Qué incluye el costo de los servicios?",
     answer:
-      "Sí. Todos nuestros paquetes incluyen parrilleros profesionales en sitio, encargados de cocinar, servir y coordinar la experiencia gastronómica del evento.",
+      "Nuestros costos cubren el traslado, toldo (de ser necesario), así como toda la maquinaria y utensilios requeridos para la realización del servicio.",
   },
   {
-    question: "¿Cuántos parrilleros necesita mi evento?",
+    question: "¿El monto de reserva representa un costo adicional?",
     answer:
-      "Calculamos un parrillero por cada 40 invitados en ciudades que requieren hospedaje. El desglose se ajusta automáticamente según la pax y la ubicación.",
+      "No, el monto de la reserva no es adicional; forma parte del total del servicio contratado.",
   },
   {
-    question: "¿Cómo se calcula el costo de traslado?",
+    question: "¿Qué sucede si debo suspender mi evento? ¿Tienen política de reembolso?",
     answer:
-      "Usamos tarifas fijas por ciudad (San Cristóbal, Caracas, Cúcuta y Barinas) o multiplicamos la distancia en kilómetros por 0.90. Si el evento supera los 180 invitados, el traslado se duplica por logística pesada.",
+      "No se realizan devoluciones de dinero en caso de suspensión. Sin embargo, el evento se reprograma para una nueva fecha que decidas y serás atendido con total prioridad.",
   },
   {
-    question: "¿Pueden atender eventos fuera de Venezuela?",
+    question: "¿Los niños pagan la tarifa completa del servicio?",
     answer:
-      "Trabajamos principalmente en Venezuela. Eventos en ciudades extranjeras se cotizan a través de WhatsApp.",
+      "Los niños de hasta 4 años de edad están completamente exentos de costo. Para niños de entre 5 y 10 años, se abona únicamente el 50% de la tarifa establecida.",
   },
   {
-    question: "¿Qué métodos de pago aceptan?",
+    question: "¿Con cuánta anticipación debe cancelarse la totalidad del evento?",
     answer:
-      "Aceptamos Zelle, Binance, efectivo y Bs. La totalidad del pago del evento debe realizarse máximo 5 días antes.",
+      "El pago total del evento debe estar liquidado al menos 7 días antes de la fecha pautada.",
   },
   {
-    question: "¿Cuánto tiempo antes debo reservar?",
+    question: "¿Qué ocurre si se retrasa la hora acordada para servir la comida?",
     answer:
-      "Recomendamos reservar con al menos 2 o 3 semanas de anticipación, especialmente en temporada alta, para garantizar disponibilidad de equipo y personal.",
+      "En caso de presentarse un retraso mayor a 3 horas por parte del cliente respecto a la hora acordada de servicio, aplicará una penalidad.",
   },
 ];
 

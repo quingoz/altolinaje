@@ -56,12 +56,15 @@ export interface MenuModality {
   name: string;
   minRecipes: number;
   maxRecipes: number;
+  minSalads?: number;
   description: string;
   /** Mínimo de personas requeridas para esta modalidad, si aplica. */
   minPax?: number;
   recommendedMinPax?: number;
   /** Si es true, omite la selección de recetas, contornos y ensaladas y va directo al resumen. */
   skipMenu?: boolean;
+  /** Precio fijo por persona para esta modalidad; si se define, reemplaza las tarifas base. */
+  pricePerPerson?: number;
   /** Ruta de la imagen representativa de la modalidad (relativa a /public). */
   image?: string;
 }
@@ -78,7 +81,19 @@ export interface MenuOption {
 }
 
 /** Estructura completa del archivo de configuración de tarifas (rates.json). */
+export interface ExtraOption extends MenuOption {
+  category: "entrada" | "adicional";
+  unit: "table" | "person";
+  price: number;
+}
+
+export interface ExtraLine extends ExtraOption {
+  quantity: number;
+  total: number;
+}
+
 export interface RateConfig {
+  extras: ExtraOption[];
   baseRates: {
     regionalPricePerPerson: number;
     nationalPricePerPerson: number;

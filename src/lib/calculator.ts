@@ -1,5 +1,5 @@
 import rateConfigData from "@/data/rates.json";
-import type { RateConfig } from "@/types/calculator";
+import type { ExtraLine, RateConfig } from "@/types/calculator";
 
 const rateConfig = rateConfigData as RateConfig;
 
@@ -18,10 +18,15 @@ export interface CalculateQuoteParams {
   city: string;
   /** Tipo de servicio: completo con ingredientes o solo mano de obra. */
   serviceType?: ServiceType;
+  /** Identificador de la modalidad elegida; permite precios por persona específicos. */
+  modalityId?: string;
+  extraIds?: string[];
 }
 
 /** Desglose del cálculo de una cotización. */
 export interface QuoteBreakdown {
+  extrasCost: number;
+  extras: ExtraLine[];
   /** Costo base de carnes (precio por persona * pax). */
   baseCost: number;
   /** Costo de traslado, considerando tarifa por ciudad y logística pesada. */
@@ -70,12 +75,17 @@ function getAssignedBranchName(state: string): string {
 export function calculateQuote(
   params: CalculateQuoteParams
 ): QuoteBreakdown {
-  const { pax, state, city, serviceType = "full" } = params;
+  const { pax, state, city, serviceType = "full", modalityId } = params;
 
   // Costo base del servicio
   const isRegionalState = rateConfig.baseRates.regionalStates.includes(state);
+  const modalityPrice = rateConfig.menuOptions.modalities.find(
+    (m) => m.id === modalityId
+  )?.pricePerPerson;
   const pricePerPerson =
-    serviceType === "labor_only"
+    typeof modalityPrice === "number"
+      ? modalityPrice
+      : serviceType === "labor_only"
       ? isRegionalState
         ? rateConfig.baseRates.laborOnlyRegionalPricePerPerson
         : rateConfig.baseRates.laborOnlyNationalPricePerPerson
@@ -111,9 +121,18 @@ export function calculateQuote(
   const lodgingCost = grillMastersCount * rateConfig.lodging.costPerParrillero;
 
   // Total estimado
-  const totalEstimate = baseCost + travelCost + lodgingCost;
+  const extras = rateConfig.extras
+    .filter((item) => params.extraIds?.includes(item.id))
+    .map((item) => {
+      const quantity = item.unit === "table" ? Math.ceil(Math.max(0, pax) / 10) : Math.max(0, pax);
+      return { ...item, quantity, total: item.price * quantity };
+    });
+  const extrasCost = extras.reduce((sum, item) => sum + item.total, 0);
+  const totalEstimate = baseCost + travelCost + lodgingCost + extrasCost;
 
   return {
+    extras,
+    extrasCost,
     baseCost,
     travelCost,
     lodgingCost,

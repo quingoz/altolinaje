@@ -109,13 +109,26 @@
       "Margarita", "Coro", "Acarigua", "Araure", "Guanare", "San Felipe", "Barinitas", "El Tocuyo"
     ]
   },
+  "extras": [
+    { "id": "cerdoviche", "name": "Cerdoviche", "description": "(Cerdo con chicharrón) acompañado de tostones", "category": "entrada", "unit": "table", "price": 35 },
+    { "id": "alitas_bbq", "name": "Alitas Ahumadas en BBQ", "description": "(Chupetas de pollo)", "category": "entrada", "unit": "table", "price": 18 },
+    { "id": "queso_llanero", "name": "Queso Llanero Asado", "description": "Acompañado de casabe", "category": "entrada", "unit": "table", "price": 18 },
+    { "id": "mini_cachapas", "name": "Mini Cachapas", "description": "Con queso telita / queso de mano", "category": "entrada", "unit": "table", "price": 18 },
+    { "id": "tabla_alto_linaje", "name": "Tabla Alto Linaje", "description": "Incluye chorizo, morcilla, pork belly con chicharrón y chistorras con limón", "category": "entrada", "unit": "table", "price": 50 },
+    { "id": "chorizos", "name": "Chorizos", "category": "adicional", "unit": "table", "price": 15 },
+    { "id": "morcillas", "name": "Morcillas", "category": "adicional", "unit": "table", "price": 15 },
+    { "id": "chistorras_limon", "name": "Chistorras con Limón", "category": "adicional", "unit": "table", "price": 15 },
+    { "id": "cachapa", "name": "Cachapa", "description": "Con queso telita / queso de mano", "category": "adicional", "unit": "person", "price": 8 },
+    { "id": "hervido_cruzado", "name": "Hervido Cruzado", "description": "Res y pollo", "category": "adicional", "unit": "person", "price": 15 }
+  ],
   "menuOptions": {
     "modalities": [
+      { "id": "parrilla_libre", "name": "Parrilla Libre", "minRecipes": 4, "maxRecipes": 4, "minSalads": 2, "pricePerPerson": 40, "description": "Eliges 4 tipos de proteína diferentes, 1, 2 o 3 contornos y 2 ensaladas. Presentado en las parrilleras estilo libre directo a la mesa. 3 horas de servicio ilimitado." },
       { "id": "self_service", "name": "Self-Service", "minRecipes": 2, "maxRecipes": 3, "description": "Nuestro equipo desplegara cada estacion de comida en los Chef and Dish. El servicio finaliza al momento que se agota la comida.", "image": "/images/mode-self-services.jpg" },
       { "id": "doble_tanda", "name": "Doble Tanda", "minRecipes": 4, "maxRecipes": 4, "description": "800 gr de proteína por persona + 200 gr de contornos + ensaladas. Servidas en las Cajas Alto Linaje en dos oportunidades, con una diferencia de 2 a 3 horas. La capacidad de cada caja es de 8 a 10 personas.", "image": "/images/mode-doble-tanda.jpg" },
       { "id": "rodizio", "name": "Rodizio", "minRecipes": 4, "maxRecipes": 4, "description": "Los comensales dispondrán de una mesa de contornos y ensaladas para servirse al gusto, mientras los chefs pasan directamente por las mesas ofreciendo una rotación constante de cortes durante 3 horas de servicio de rodizio.", "image": "/images/mode-rodizio.jpg" },
       { "id": "plato_a_plato", "name": "Plato a Plato", "minRecipes": 2, "maxRecipes": 2, "recommendedMinPax": 150, "description": "Consiste en servicio plato a plato por persona, entregado por el personal o mesoneros directo a la mesa de los comensales.", "image": "/images/POR-PLATO-1.jpg" },
-      { "id": "pincheras", "name": "Pincheras", "minRecipes": 0, "maxRecipes": 0, "skipMenu": true, "description": "Disfruta de servicio de pinchos por un tiempo limitado de 3 horas continuas. Las proteínas y acompañamientos se definen al momento de la negociación.", "image": "/images/PINCHOS.PNG" }
+      { "id": "pincheras", "name": "Pincheras", "minRecipes": 0, "maxRecipes": 0, "skipMenu": true, "pricePerPerson": 25, "description": "Disfruta de servicio de pinchos por un tiempo limitado de 3 horas continuas. Las proteínas y acompañamientos se definen al momento de la negociación.", "image": "/images/PINCHOS.PNG" }
     ],
     "recipes": [
       { "id": "lomo_cerdo", "name": "Lomo de Cerdo", "description": "Con chicharron acompañado de salsa de chistorra y pimenton ahumado.", "images": ["/images/recetas/LOMO-DE-CERDO-1.jpg", "/images/recetas/LOMO-DE-CERDO-2.jpg"] },
@@ -127,7 +140,7 @@
       { "id": "picanha", "name": "Picanha Tradicional", "description": "Con chimichurri.", "images": ["/images/recetas/PICANHA-TRADICIONAL.jpg","/images/recetas/PICANHA-1.jpg", "/images/recetas/PICANHA-2.jpg"] },
       { "id": "churrasco_solomo", "name": "Churrasco de Solomo / Punta Grill", "description": "Con salsa de vegetales tatemados.", "images": ["/images/recetas/CHURRASCO-PUNTA-1.jpg"] },
       { "id": "pollo_vara", "name": "Pollo en Vara", "description": "Con guasacaca.","images": ["/images/recetas/POLLO-EN-VARA-1.jpg"] },
-      { "id": "pechuga_grill", "name": "Churrasco o Pechuga de Pollo al Grill", "description": "Con salsa tatemada" }
+      { "id": "pechuga_grill", "name": "Churrasco o Pechuga de Pollo al Grill", "description": "Con salsa tatemada", "images": ["/images/recetas/CHURRASCO-DE-POLLO-AL-GRILL-1.jpg"]}
     ],
     "sides": [
       { "id": "yuca", "name": "Yuca cocida", "images": ["/images/recetas/YUCA-1.jpg"]},
@@ -135,8 +148,9 @@
       { "id": "mazorcas", "name": "Mazorcas a la parrilla","images":["/images/recetas/MAZORCAS-1.PNG"]}
     ],
     "salads": [
-      { "id": "pimentones", "name": "Pimentones ahumados rellenos", "description": "Pimentones ahumados y rellenos de queso mozarella con topping de chorizo ahumado"},
-      { "id": "capressa", "name": "Ensalada Capressa tradicional", "description": "Rodajas de tomate con queso mozarella y topping de pesto de albahaca", "images": ["/images/recetas/ENSALADA-CAPRESSA-1.JPG"]},
+      { "id": "pimentones", "name": "Pimentones Ahumados Rellenos", "description": "De queso mozarella con topping de chorizo ahumado"},
+      { "id": "capressa", "name": "Ensalada Capressa Tradicional", "description": "De tomate, queso de mano o mozarella y pesto de albahaca", "images": ["/images/recetas/ENSALADA-CAPRESSA-1.JPG"]},
+      { "id": "mixta", "name": "Ensalada Mixta", "description": "Lechuga, tomate, cebolla, pepino y aguacate"},
       { "id": "cesar", "name": "Ensalada César", "description": "A base de lechuga romana, picatostes (croûtons) y queso parmesano, acompañado de un aderezo cremoso elaborado tradicionalmente con aceite de oliva, huevo, jugo de limón, ajo, salsa Worcestershire (salsa inglesa) y anchoas", "images":["/images/recetas/CESAR-1.jpg"] }
     ]
   }

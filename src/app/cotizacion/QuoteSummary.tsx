@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { formatCurrency } from "@/lib/whatsapp";
+import type { ExtraLine } from "@/types/calculator";
 
 interface SavedQuote {
   eventDate: string;
@@ -19,6 +20,8 @@ interface SavedQuote {
   travelCost: number;
   isTravelPending: boolean;
   lodgingCost: number;
+  extras?: ExtraLine[];
+  extrasCost?: number;
   total: number;
   isTravelDoubled: boolean;
   grillMastersCount: number;
@@ -81,6 +84,9 @@ export default function QuoteSummary() {
     return <p className="text-center text-white/60">Cargando cotización...</p>;
   }
 
+  const extras = quote.extras ?? [];
+  const extrasSubtotal = quote.extrasCost ?? extras.reduce((acc, extra) => acc + extra.total, 0);
+
   return (
     <div className="mx-auto max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-[#16181d]">
       <div className="border-b border-white/10 p-6 sm:p-8">
@@ -113,10 +119,35 @@ export default function QuoteSummary() {
           <MenuList label="Ensaladas" items={quote.salads} />
         </div>
 
+        {extras.length > 0 && (
+          <div className="space-y-3 rounded-2xl border border-white/10 p-5">
+            <p className="text-xs font-medium uppercase tracking-wider text-[#fd0200]">Extras seleccionados</p>
+            {extras.map((extra) => (
+              <div key={extra.id} className="flex items-baseline justify-between gap-4 text-sm text-white/70">
+                <span>
+                  {extra.name}
+                  {extra.description ? ` — ${extra.description}` : ""}
+                  <span className="ml-1 text-xs text-white/40">
+                    x{extra.quantity} · {formatCurrency(extra.price)} c/u
+                  </span>
+                </span>
+                <span className="whitespace-nowrap">{formatCurrency(extra.total)}</span>
+              </div>
+            ))}
+            <div className="flex justify-between gap-4 border-t border-white/10 pt-3 text-sm font-semibold text-white">
+              <span>Subtotal extras</span>
+              <span>{formatCurrency(extrasSubtotal)}</span>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-3 rounded-2xl bg-[#0b0c0e] p-5">
           <div className="flex justify-between gap-4 text-white/70"><span>Servicio</span><span>{formatCurrency(quote.baseCost)}</span></div>
           <div className="flex justify-between gap-4 text-white/70"><span>Logística/Traslado</span><span>{quote.isTravelPending ? "Por confirmar" : formatCurrency(quote.travelCost)}</span></div>
           <div className="flex justify-between gap-4 text-white/70"><span>Hospedaje{quote.grillMastersCount > 0 ? ` (${quote.grillMastersCount} parrilleros)` : ""}</span><span>{formatCurrency(quote.lodgingCost)}</span></div>
+          {extras.length > 0 && (
+            <div className="flex justify-between gap-4 text-white/70"><span>Extras</span><span>{formatCurrency(extrasSubtotal)}</span></div>
+          )}
           <div className="flex justify-between gap-4 border-t border-white/10 pt-4 text-xl font-semibold text-white"><span>{quote.isTravelPending ? "Total parcial" : "Total estimado"}</span><span>{formatCurrency(quote.total)} USD</span></div>
         </div>
 
