@@ -144,7 +144,7 @@ export default function QuoteSummary() {
         <div className="space-y-3 rounded-2xl bg-[#0b0c0e] p-5">
           <div className="flex justify-between gap-4 text-white/70"><span>Servicio</span><span>{formatCurrency(quote.baseCost)}</span></div>
           <div className="flex justify-between gap-4 text-white/70"><span>Logística/Traslado</span><span>{quote.isTravelPending ? "Por confirmar" : formatCurrency(quote.travelCost)}</span></div>
-          <div className="flex justify-between gap-4 text-white/70"><span>Hospedaje{quote.grillMastersCount > 0 ? ` (${quote.grillMastersCount} parrilleros)` : ""}</span><span>{formatCurrency(quote.lodgingCost)}</span></div>
+          <div className="flex justify-between gap-4 text-white/70"><span>Hospedaje</span><span>{formatCurrency(quote.lodgingCost)}</span></div>
           {extras.length > 0 && (
             <div className="flex justify-between gap-4 text-white/70"><span>Extras</span><span>{formatCurrency(extrasSubtotal)}</span></div>
           )}

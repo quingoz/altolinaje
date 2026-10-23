@@ -63,8 +63,6 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     : "";
 
   const travelNote = isTravelDoubled ? " (logística pesada x2)" : "";
-  const lodgingNote =
-    (grillMastersCount ?? 0) > 0 ? ` (${grillMastersCount} parrilleros)` : "";
 
   return [
     "*COTIZACIÓN DE EVENTO - ALTO LINAJE*",
@@ -91,7 +89,7 @@ function buildWhatsAppMessage(params: WhatsAppQuoteParams): string {
     `• Servicio: ${formatCurrency(baseCost)}`,
     `• Entradas y adicionales: ${formatCurrency(params.extrasCost ?? 0)}`,
     `• Logística/Traslado: ${isTravelPending ? "Por confirmar" : `${formatCurrency(travelCost)}${travelNote}`}`,
-    `• Hospedaje${lodgingNote}: ${formatCurrency(lodgingCost)}`,
+    `• Hospedaje: ${formatCurrency(lodgingCost)}`,
     hasOwnerAdjustment ? adjustment : "",
     `• *${isTravelPending ? "TOTAL PARCIAL" : "TOTAL ESTIMADO"}: ${formatCurrency(total)} USD*`,
     "",

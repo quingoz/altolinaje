@@ -390,11 +390,6 @@ const OwnerPDF = forwardRef<OwnerPDFRef, OwnerPDFData>(
                 <tr className="border-b border-[#e5e7eb]">
                   <td className="w-2/3 border-r border-[#e5e7eb] p-2 font-semibold text-[#374151]">
                     Hospedaje de parrilleros
-                    {props.grillMastersCount > 0 && (
-                      <span className="ml-1 text-[8pt] text-[#6b7280]">
-                        ({props.grillMastersCount} parrilleros)
-                      </span>
-                    )}
                   </td>
                   <td className="p-2 text-right font-mono">
                     {formatCurrency(props.lodgingCost)}

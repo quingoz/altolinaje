@@ -23,12 +23,12 @@ const FAQS = [
   {
     question: "¿Los niños pagan la tarifa completa del servicio?",
     answer:
-      "Los niños de hasta 4 años de edad están completamente exentos de costo. Para niños de entre 5 y 10 años, se abona únicamente el 50% de la tarifa establecida.",
+      "Los niños de hasta 3 años de edad están completamente exentos de costo. Para niños de entre 4 y 7 años, se abona únicamente el 50% de la tarifa establecida.",
   },
   {
     question: "¿Con cuánta anticipación debe cancelarse la totalidad del evento?",
     answer:
-      "El pago total del evento debe estar liquidado al menos 7 días antes de la fecha pautada.",
+      "El pago total del evento debe estar liquidado al menos 5 días antes de la fecha pautada.",
   },
   {
     question: "¿Qué ocurre si se retrasa la hora acordada para servir la comida?",

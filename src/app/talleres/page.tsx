@@ -31,7 +31,7 @@ const VIDEOS = [
 ];
 
 const STATS = [
-  { value: "+300", label: "Talleres dictados" },
+  { value: "+30", label: "Talleres dictados" },
   { value: "+15", label: "Ciudades visitadas" },
   { value: "+2000", label: "Participantes" },
 ];

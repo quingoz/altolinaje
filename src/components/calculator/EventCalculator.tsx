@@ -766,11 +766,6 @@ function FloatingBar({
               <p className="text-xs text-white/50">Hospedaje</p>
               <p className="text-lg font-semibold text-white">
                 {formatCurrency(quote.lodgingCost)}
-                {quote.grillMastersCount > 0 && (
-                  <span className="ml-1 text-xs text-white/50">
-                    ({quote.grillMastersCount} parrilleros)
-                  </span>
-                )}
               </p>
             </div>
             <div>
@@ -1507,9 +1502,6 @@ export default function EventCalculator() {
                   <p className="text-xs text-white/50">Hospedaje</p>
                   <p className="text-lg font-semibold text-white">
                     {formatCurrency(quote.lodgingCost)}
-                    {quote.grillMastersCount > 0 && (
-                      <span className="ml-1 text-xs text-white/50">({quote.grillMastersCount} parrilleros)</span>
-                    )}
                   </p>
                 </div>
                 <div>
