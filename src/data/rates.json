@@ -118,7 +118,6 @@
     { "id": "chorizos", "name": "Chorizos", "category": "adicional", "unit": "table", "price": 15 },
     { "id": "morcillas", "name": "Morcillas", "category": "adicional", "unit": "table", "price": 15 },
     { "id": "chistorras_limon", "name": "Chistorras con Limón", "category": "adicional", "unit": "table", "price": 15 },
-    { "id": "cachapa", "name": "Cachapa", "description": "Con queso telita / queso de mano", "category": "adicional", "unit": "person", "price": 8 },
     { "id": "hervido_cruzado", "name": "Hervido Cruzado", "description": "Res y pollo", "category": "adicional", "unit": "person", "price": 15 }
   ],
   "menuOptions": {
