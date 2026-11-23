@@ -867,8 +867,8 @@ export default function EventCalculator() {
   const [step, setStep] = useState(1);
 
   const [pax, setPax] = useState(50);
-  const [selectedState, setSelectedState] = useState("Táchira");
-  const [selectedCity, setSelectedCity] = useState("San Cristóbal");
+  const [selectedState, setSelectedState] = useState("Distrito Capital");
+  const [selectedCity, setSelectedCity] = useState("Caracas");
   const [serviceType, setServiceType] = useState<ServiceType>("full");
   const [eventDate, setEventDate] = useState("");
 
@@ -1230,7 +1230,12 @@ export default function EventCalculator() {
                     setEventDate(formatted);
                   }}
                   maxLength={10}
-                  className="w-full rounded-lg border border-white/10 bg-[#16181d] py-3 pl-4 pr-12 text-white outline-none transition-colors focus:border-[#fd0200]"
+                  onClick={() => {
+                    if (window.matchMedia("(pointer: coarse)").matches) {
+                      datePickerRef.current?.showPicker();
+                    }
+                  }}
+                  className="w-full cursor-pointer rounded-lg border border-white/10 bg-[#16181d] py-3 pl-4 pr-12 text-white outline-none transition-colors focus:border-[#fd0200]"
                 />
                 <button
                   type="button"
